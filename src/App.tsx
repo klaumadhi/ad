@@ -5,6 +5,7 @@ import { useLenis } from './hooks/useLenis'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
+import Preloader from './components/Preloader'
 import Hero from './sections/Hero'
 import CodeToGrowth from './sections/CodeToGrowth'
 import About from './sections/About'
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <>
+      <Preloader />
       <CustomCursor />
       <div className="noise-overlay" />
       <Navbar />

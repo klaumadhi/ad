@@ -5,6 +5,7 @@ import MagneticButton from '../components/MagneticButton'
 import GlitchLine from '../components/GlitchLine'
 import { useIsTouch, useReducedMotion } from '../hooks/useMedia'
 import { getLenis } from '../hooks/useLenis'
+import { onIntro } from '../lib/intro'
 
 const HeroScene = lazy(() => import('../three/HeroScene'))
 
@@ -18,14 +19,18 @@ export default function Hero() {
   const reduced = useReducedMotion()
 
   useEffect(() => {
+    let offIntro: () => void = () => {}
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } })
-      tl.set(logoWrapRef.current, { opacity: 0, scale: 0.85 })
-        .set('.hero-sub, .hero-cta, .hero-scroll-cue', { opacity: 0, y: 20 })
-        .to(logoWrapRef.current, { opacity: 1, scale: 1, duration: 1.4, ease: 'power3.out' }, 0.1)
-        .to('.hero-sub', { opacity: 1, y: 0, duration: 0.9 }, 1.05)
-        .to('.hero-cta', { opacity: 1, y: 0, duration: 0.9, stagger: 0.1 }, 1.15)
-        .to('.hero-scroll-cue', { opacity: 1, y: 0, duration: 0.8 }, 1.4)
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out' }, paused: true })
+      gsap.set('.hero-sub, .hero-cta, .hero-scroll-cue', { opacity: 0, y: 20 })
+      gsap.set(logoWrapRef.current, { opacity: 0 })
+      tl.set('.hero-sub, .hero-cta, .hero-scroll-cue', { opacity: 0, y: 20 })
+        .set(logoWrapRef.current, { opacity: 0 })
+        .to(logoWrapRef.current, { opacity: 1, duration: 0.9, ease: 'power2.out' }, 0.25)
+        .to('.hero-sub', { opacity: 1, y: 0, duration: 0.9 }, 0.7)
+        .to('.hero-cta', { opacity: 1, y: 0, duration: 0.9, stagger: 0.1 }, 0.8)
+        .to('.hero-scroll-cue', { opacity: 1, y: 0, duration: 0.8 }, 1.05)
+      offIntro = onIntro(() => tl.play())
 
       if (!reduced && sectionRef.current) {
         gsap.to(contentRef.current, {
@@ -44,7 +49,10 @@ export default function Hero() {
       }
     }, sectionRef)
 
-    return () => ctx.revert()
+    return () => {
+      offIntro()
+      ctx.revert()
+    }
   }, [reduced])
 
   const scrollToWork = () => {
@@ -80,7 +88,7 @@ export default function Hero() {
         ref={contentRef}
         className="relative z-10 flex h-full w-full flex-col items-center justify-center px-6 text-center"
       >
-        <div ref={logoWrapRef} className="mb-3 flex h-[160px] flex-col items-center justify-end sm:h-[190px] md:h-[220px]">
+        <div id="hero-logo-anchor" ref={logoWrapRef} className="mb-3 flex h-[160px] flex-col items-center justify-end sm:h-[190px] md:h-[220px]">
           <span className="sr-only">Authentic Dev — AD monogram with double-headed eagle</span>
           <span
             aria-hidden
@@ -91,10 +99,10 @@ export default function Hero() {
         </div>
 
         <h1 className="font-display font-black uppercase leading-[0.92] tracking-tight text-bone">
-          <GlitchLine className="text-[10vw] sm:text-[7.5vw] md:text-[5.4vw]" delay={0.5}>
+          <GlitchLine className="text-[10vw] sm:text-[7.5vw] md:text-[5.4vw]" delay={0.1}>
             We Build <span className="text-bone/35">Digital</span>
           </GlitchLine>
-          <GlitchLine className="text-[10vw] sm:text-[7.5vw] md:text-[5.4vw]" delay={0.62}>
+          <GlitchLine className="text-[10vw] sm:text-[7.5vw] md:text-[5.4vw]" delay={0.22}>
             <span className="text-red">Experiences.</span>
           </GlitchLine>
         </h1>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import gsap from 'gsap'
+import { intro, onIntro } from '../lib/intro'
 
 type GlitchLineProps = {
   children: ReactNode
@@ -24,12 +25,18 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
     const cyan = el.querySelector('.glitch-cyan')
     if (!main || !red || !cyan) return
 
+    let offIntro: () => void = () => {}
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         delay,
+        paused: !trigger && !intro.started,
         scrollTrigger: trigger ? { trigger, start: 'top 88%' } : undefined,
       })
+      if (!trigger && !intro.started) {
+        offIntro = onIntro(() => tl.play())
+      }
 
+      gsap.set(el, { yPercent: 100 })
       tl.set(el, { yPercent: 100 })
         .set([red, cyan], { opacity: 0 })
         .to(el, { yPercent: 0, duration: 0.01 })
@@ -47,7 +54,10 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
         .to([red, cyan], { opacity: 0, x: 0, duration: 0.12, ease: 'power2.out' }, 0.4)
     }, wrapRef)
 
-    return () => ctx.revert()
+    return () => {
+      offIntro()
+      ctx.revert()
+    }
   }, [trigger, delay])
 
   return (

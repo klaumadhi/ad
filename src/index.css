@@ -193,3 +193,6 @@ button {
 .mask-fade-b {
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
 }
+
+header { transition: opacity 0.8s ease; }
+html.is-loading header { opacity: 0; }

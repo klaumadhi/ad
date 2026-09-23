@@ -1,20 +1,38 @@
-import { Suspense, useRef } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, Lightformer, ContactShadows, Grid } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import LogoModel from './LogoModel'
 import StreakParticles from './StreakParticles'
+import { heroIntro } from '../lib/intro'
 
 function Rig({ isTouch }: { isTouch: boolean }) {
   useFrame((state) => {
-    const px = isTouch ? 0 : state.pointer.x
-    const py = isTouch ? 0 : state.pointer.y
+    const k = heroIntro.k
+    const calm = heroIntro.active ? 0 : 1
+    const px = isTouch ? 0 : state.pointer.x * calm
+    const py = isTouch ? 0 : state.pointer.y * calm
     const targetX = px * 0.7
-    const targetY = 1.1 + py * 0.35
-    state.camera.position.x += (targetX - state.camera.position.x) * 0.035
-    state.camera.position.y += (targetY - state.camera.position.y) * 0.035
-    state.camera.lookAt(0, 0.4, 0)
+    const targetY = 1.1 + py * 0.35 + k * 0.45
+    const ease = heroIntro.active ? 0.2 : 0.035
+    state.camera.position.x += (targetX - state.camera.position.x) * ease
+    state.camera.position.y += (targetY - state.camera.position.y) * ease
+    state.camera.lookAt(0, 0.4 + k * 1.15, 0)
+  })
+  return null
+}
+
+function ReadySignal({ onReady }: { onReady: () => void }) {
+  const frames = useRef(0)
+  const sent = useRef(false)
+  useFrame(() => {
+    frames.current += 1
+    if (frames.current > 8 && !sent.current) {
+      sent.current = true
+      onReady()
+      window.dispatchEvent(new Event('hero-scene-ready'))
+    }
   })
   return null
 }
@@ -48,8 +66,8 @@ function SweepLight() {
 function ResponsiveCamera() {
   useFrame((state) => {
     const aspect = state.size.width / state.size.height
-    const targetZ = aspect < 0.75 ? 12 : 9
-    state.camera.position.z += (targetZ - state.camera.position.z) * 0.05
+    const targetZ = (aspect < 0.75 ? 12 : 9) - heroIntro.k * (aspect < 0.75 ? 5 : 3.6)
+    state.camera.position.z += (targetZ - state.camera.position.z) * (heroIntro.active ? 0.2 : 0.05)
     if (state.camera instanceof THREE.PerspectiveCamera) {
       const fov = aspect < 0.75 ? 42 : 36
       if (Math.abs(state.camera.fov - fov) > 0.1) {
@@ -63,6 +81,7 @@ function ResponsiveCamera() {
 
 export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
   const scrollRotation = useRef(0)
+  const [ready, setReady] = useState(false)
 
   return (
     <Canvas
@@ -71,6 +90,7 @@ export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
       camera={{ position: [0, 1.1, 9], fov: 36 }}
       gl={{ antialias: !isTouch, alpha: true, powerPreference: 'high-performance' }}
       className="!absolute inset-0"
+      style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.9s ease' }}
     >
       <color attach="background" args={['#08090B']} />
       <fog attach="fog" args={['#08090B', 9, 17]} />
@@ -80,6 +100,7 @@ export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
 
       <Suspense fallback={null}>
         <StudioLights />
+        <ReadySignal onReady={() => setReady(true)} />
         <SweepLight />
         <LogoModel scrollRotation={scrollRotation} scale={1} position={[0, 1.55, 0]} interactive={!isTouch} />
         <StreakParticles count={isTouch ? 20 : 36} color="#D71920" spread={[22, 12, 14]} />
