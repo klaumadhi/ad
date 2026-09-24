@@ -195,4 +195,4 @@ button {
 }
 
 header { transition: opacity 0.8s ease; }
-html.is-loading header { opacity: 0; }
+html.is-loading header { opacity: 0 !important; visibility: hidden; }

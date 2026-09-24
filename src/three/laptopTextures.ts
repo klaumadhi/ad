@@ -233,3 +233,136 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.arcTo(x, y, x + w, y, r)
   ctx.closePath()
 }
+
+/**
+ * Holographic UI layer textures — drawn as glowing line-art so they read as
+ * translucent "layers" of a product (structure, interface, data, logic).
+ */
+export type HoloKind = 'structure' | 'interface' | 'data' | 'logic'
+
+export function makeHoloTexture(kind: HoloKind) {
+  const w = 1024
+  const h = 610
+  const c = document.createElement('canvas')
+  c.width = w
+  c.height = h
+  const ctx = c.getContext('2d')!
+  ctx.clearRect(0, 0, w, h)
+  const line = kind === 'interface' ? '#ff4b52' : '#f5f5f2'
+  const soft = kind === 'interface' ? 'rgba(215,25,32,0.16)' : 'rgba(255,255,255,0.07)'
+  ctx.lineWidth = 3
+  ctx.strokeStyle = line
+  ctx.shadowColor = kind === 'interface' ? '#D71920' : '#ffffff'
+  ctx.shadowBlur = 14
+
+  // Frame + corner brackets
+  ctx.globalAlpha = 0.5
+  ctx.strokeRect(10, 10, w - 20, h - 20)
+  ctx.globalAlpha = 1
+  ctx.lineWidth = 6
+  const b = 46
+  ;[[10, 10, 1, 1], [w - 10, 10, -1, 1], [10, h - 10, 1, -1], [w - 10, h - 10, -1, -1]].forEach(([x, y, dx, dy]) => {
+    ctx.beginPath()
+    ctx.moveTo(x, y + dy * b)
+    ctx.lineTo(x, y)
+    ctx.lineTo(x + dx * b, y)
+    ctx.stroke()
+  })
+  ctx.lineWidth = 3
+
+  const box = (x: number, y: number, bw: number, bh: number, fill = false) => {
+    if (fill) {
+      ctx.shadowBlur = 0
+      ctx.fillStyle = soft
+      ctx.fillRect(x, y, bw, bh)
+      ctx.shadowBlur = 14
+    }
+    ctx.strokeRect(x, y, bw, bh)
+  }
+
+  if (kind === 'structure') {
+    // Wireframe layout with dimension ticks
+    box(60, 60, w - 120, 70)
+    box(60, 160, 560, 300)
+    box(650, 160, 314, 140)
+    box(650, 320, 314, 140)
+    box(60, 490, w - 120, 60)
+    ctx.setLineDash([10, 10])
+    ctx.beginPath()
+    ctx.moveTo(30, 60); ctx.lineTo(30, 550)
+    ctx.moveTo(60, 30); ctx.lineTo(w - 60, 30)
+    ctx.stroke()
+    ctx.setLineDash([])
+    ctx.font = '600 22px monospace'
+    ctx.fillStyle = line
+    ctx.shadowBlur = 0
+    ctx.fillText('1440', w / 2 - 30, 24)
+    ctx.fillText('HERO', 80, 250)
+    ctx.fillText('GRID / 12', 670, 240)
+  } else if (kind === 'interface') {
+    // Filled components: nav pill, headline bars, buttons, cards
+    box(60, 60, w - 120, 64, true)
+    ctx.shadowBlur = 0
+    ctx.fillStyle = 'rgba(255,75,82,0.85)'
+    ctx.fillRect(w - 250, 76, 170, 32)
+    ctx.fillStyle = 'rgba(245,245,242,0.8)'
+    ctx.fillRect(90, 90, 120, 12)
+    ctx.fillRect(90, 175, 470, 34)
+    ctx.fillRect(90, 225, 340, 34)
+    ctx.fillStyle = 'rgba(255,75,82,0.9)'
+    ctx.fillRect(90, 300, 190, 54)
+    ctx.shadowBlur = 14
+    box(300, 300, 190, 54)
+    box(60, 400, 290, 130, true)
+    box(367, 400, 290, 130, true)
+    box(674, 400, 290, 130, true)
+    box(650, 160, 314, 200, true)
+  } else if (kind === 'data') {
+    // Chart + bars + nodes
+    ctx.beginPath()
+    ctx.moveTo(70, 470)
+    const pts = [60, 120, 90, 200, 170, 260, 240, 330, 300, 350, 380, 280]
+    for (let i = 0; i < 12; i += 2) ctx.lineTo(70 + (i / 12) * 900, 470 - pts[i + 1] * 0.95)
+    ctx.stroke()
+    for (let i = 0; i < 12; i++) {
+      const bh = 60 + ((i * 53) % 130)
+      ctx.strokeRect(80 + i * 76, 540 - bh * 0.35, 46, bh * 0.35)
+    }
+    for (let i = 0; i < 6; i++) {
+      ctx.beginPath()
+      ctx.arc(70 + i * 170, 470 - pts[i * 2 + 1] * 0.95, 9, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+    box(660, 70, 300, 110, true)
+    ctx.font = '700 64px monospace'
+    ctx.fillStyle = line
+    ctx.shadowBlur = 0
+    ctx.fillText('+248%', 690, 145)
+  } else {
+    // Logic: brackets + connected nodes
+    ctx.font = '700 300px monospace'
+    ctx.fillStyle = 'rgba(245,245,242,0.12)'
+    ctx.shadowBlur = 0
+    ctx.fillText('{ }', 300, 400)
+    ctx.shadowBlur = 14
+    const nodes: [number, number][] = [[140, 150], [420, 110], [720, 170], [300, 340], [620, 380], [880, 320], [160, 500]]
+    ctx.beginPath()
+    ;[[0, 1], [1, 2], [1, 3], [3, 4], [4, 5], [2, 5], [3, 6]].forEach(([a, bb]) => {
+      ctx.moveTo(nodes[a][0], nodes[a][1])
+      ctx.lineTo(nodes[bb][0], nodes[bb][1])
+    })
+    ctx.stroke()
+    nodes.forEach(([x, y]) => {
+      ctx.fillStyle = '#08090B'
+      ctx.beginPath()
+      ctx.arc(x, y, 16, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.stroke()
+    })
+  }
+
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 4
+  return tex
+}

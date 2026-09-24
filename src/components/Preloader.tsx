@@ -89,13 +89,11 @@ export default function Preloader() {
       tl.to(uiRef.current, { opacity: 0, y: 16, duration: 0.45, ease: 'power2.in' })
         .to(glowRef.current, { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0.2)
         .to(heroIntro, { k: 0, duration: 1.7, ease: 'power3.inOut' }, 0.35)
-        .add(() => html.classList.remove('is-loading'), 1.1)
         .add(() => startIntro(), 1.3)
     }
 
     return () => {
       cancelAnimationFrame(raf)
-      html.classList.remove('is-loading')
       html.style.overflow = ''
     }
   }, [])

@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { getLenis } from '../hooks/useLenis'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '../data/content'
 import ProjectVisual from './ProjectVisual'
@@ -18,6 +20,18 @@ const fieldVariants = {
 }
 
 export default function ProjectCaseStudy({ project, onClose }: { project: Project | null; onClose: () => void }) {
+  useEffect(() => {
+    if (!project) return
+    const lenis = getLenis()
+    lenis?.stop()
+    const prev = document.documentElement.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+    return () => {
+      document.documentElement.style.overflow = prev
+      lenis?.start()
+    }
+  }, [project])
+
   return (
     <AnimatePresence>
       {project && (
@@ -26,7 +40,10 @@ export default function ProjectCaseStudy({ project, onClose }: { project: Projec
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
-          className="fixed inset-0 z-[110] overflow-y-auto bg-void/95 backdrop-blur-xl"
+          data-lenis-prevent
+          data-lenis-prevent-wheel
+          data-lenis-prevent-touch
+          className="fixed inset-0 z-[110] overflow-y-auto overscroll-contain bg-void/95 backdrop-blur-xl"
         >
           <div className="mx-auto max-w-5xl px-6 py-24 sm:py-28">
             <button

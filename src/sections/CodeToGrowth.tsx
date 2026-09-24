@@ -180,8 +180,8 @@ export default function CodeToGrowth() {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: () => `+=${window.innerHeight * 6}`,
-          scrub: 0.6,
+          end: () => `+=${window.innerHeight * 4.2}`,
+          scrub: 0.35,
           pin: true,
           anticipatePin: 1,
           onUpdate: (self) => {
@@ -193,16 +193,16 @@ export default function CodeToGrowth() {
       tl.set([heritageLabelRef.current, gridLabelRef.current, businessRef.current, finalRef.current], { opacity: 0 })
         .set(finalRef.current, { opacity: 0, scale: 0.94 })
         // Eagle close-up label.
-        .to(heritageLabelRef.current, { opacity: 1, duration: 0.06 }, 0.06)
-        .to(heritageLabelRef.current, { opacity: 0, duration: 0.05 }, 0.17)
+        .to(heritageLabelRef.current, { opacity: 1, duration: 0.05 }, 0.04)
+        .to(heritageLabelRef.current, { opacity: 0, duration: 0.04 }, 0.12)
         // Digital grid reveal label.
-        .to(gridLabelRef.current, { opacity: 1, duration: 0.06 }, 0.33)
-        .to(gridLabelRef.current, { opacity: 0, duration: 0.05 }, 0.42)
+        .to(gridLabelRef.current, { opacity: 1, duration: 0.05 }, 0.17)
+        .to(gridLabelRef.current, { opacity: 0, duration: 0.05 }, 0.3)
         // The 3D laptop (code → website) drives itself off progressRef inside the
         // WebGL scene — only the business layer and final headline are DOM overlays.
-        .fromTo(businessRef.current, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.1 }, 0.79)
-        .to(businessRef.current, { opacity: 0, scale: 1.08, duration: 0.06 }, 0.9)
-        .to(finalRef.current, { opacity: 1, scale: 1, duration: 0.1 }, 0.93)
+        .fromTo(businessRef.current, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.08 }, 0.81)
+        .to(businessRef.current, { opacity: 0, scale: 1.08, duration: 0.05 }, 0.9)
+        .to(finalRef.current, { opacity: 1, scale: 1, duration: 0.07 }, 0.94)
     }, section)
 
     return () => ctx.revert()
@@ -234,7 +234,7 @@ export default function CodeToGrowth() {
         </div>
 
         {/* Business ecosystem chips */}
-        <div ref={businessRef} className="absolute inset-0 flex flex-col items-center justify-center gap-6 opacity-0">
+        <div ref={businessRef} className="absolute inset-0 flex flex-col items-center justify-end gap-6 pb-[14%] opacity-0">
           <span className="eyebrow eyebrow-line">The Product Becomes A Business</span>
           <div className="flex flex-wrap justify-center gap-3 px-6">
             {businessNodes.map((node) => (

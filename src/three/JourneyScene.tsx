@@ -5,7 +5,6 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import LogoModel from './LogoModel'
 import LaptopModel from './LaptopModel'
-import FloatingPanels from './FloatingPanels'
 import StreakParticles from './StreakParticles'
 
 function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
@@ -18,69 +17,54 @@ function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<numbe
     // Camera: push in for the "eagle close-up" (~0.02-0.18), pull back to reveal the
     // grid (~0.2-0.4), settle into a laptop-framing shot (~0.4-0.86), then ease back
     // out for the business beat and the final return-to-brand shot.
+    const sm = THREE.MathUtils.smoothstep
     let targetZ = 9
     let targetY = 1.1
     let lookY = 1.3
-    let targetX = 0
-    if (p < 0.18) {
-      const t = THREE.MathUtils.smoothstep(p, 0.02, 0.18)
-      targetZ = THREE.MathUtils.lerp(9, 4.2, t)
+    if (p < 0.14) {
+      const t = sm(p, 0.0, 0.14)
+      targetZ = THREE.MathUtils.lerp(9, 4.4, t)
       targetY = THREE.MathUtils.lerp(1.1, 1.55, t)
-    } else if (p < 0.4) {
-      const t = THREE.MathUtils.smoothstep(p, 0.2, 0.4)
-      targetZ = THREE.MathUtils.lerp(4.2, 11, t)
-      targetY = THREE.MathUtils.lerp(1.55, 2.4, t)
-    } else if (p < 0.5) {
-      const t = THREE.MathUtils.smoothstep(p, 0.4, 0.5)
-      targetZ = THREE.MathUtils.lerp(11, 7.6, t)
-      targetY = THREE.MathUtils.lerp(2.4, 1.55, t)
-      lookY = THREE.MathUtils.lerp(1.3, 1.55, t)
-    } else if (p < 0.86) {
-      // A gentle breathing hold on the laptop — subtle z/y life without ever
-      // drifting the framing off-center (the laptop itself sits at x=0 and
-      // must read as centered).
+    } else if (p < 0.36) {
+      // Pull back through the split and settle toward the laptop framing.
+      const t = sm(p, 0.14, 0.36)
+      targetZ = THREE.MathUtils.lerp(4.4, 7.4, t)
+      targetY = THREE.MathUtils.lerp(1.55, 1.5, t)
+      lookY = THREE.MathUtils.lerp(1.3, 1.45, t)
+    } else if (p < 0.9) {
       const orbitT = state.clock.elapsedTime
-      targetZ = 7.6 + Math.sin(orbitT * 0.25) * 0.35
-      targetY = 1.55 + Math.sin(orbitT * 0.18) * 0.1
-      targetX = 0
-      lookY = 1.55
-    } else if (p < 0.94) {
-      const t = THREE.MathUtils.smoothstep(p, 0.86, 0.94)
-      targetZ = THREE.MathUtils.lerp(7.6, 9, t)
-      targetY = THREE.MathUtils.lerp(1.55, 1.3, t)
-      lookY = THREE.MathUtils.lerp(1.55, 1.3, t)
+      const lift = sm(p, 0.54, 0.66) - sm(p, 0.68, 0.74)
+      const fan = sm(p, 0.8, 0.88) - sm(p, 0.9, 0.95)
+      targetZ = 7.4 + Math.sin(orbitT * 0.25) * 0.2 + lift * 0.9 + fan * 1.6
+      targetY = 1.5 + Math.sin(orbitT * 0.18) * 0.06 + lift * 0.15
+      lookY = 1.45
     } else {
-      const t = THREE.MathUtils.smoothstep(p, 0.94, 1)
+      const t = sm(p, 0.9, 1)
       targetZ = THREE.MathUtils.lerp(9, 7.5, t)
       targetY = THREE.MathUtils.lerp(1.3, 1.1, t)
-      lookY = THREE.MathUtils.lerp(1.3, 1.3, t)
+      lookY = 1.3
     }
 
-    state.camera.position.z += (targetZ - state.camera.position.z) * Math.min(1, delta * 2.2)
-    state.camera.position.y += (targetY - state.camera.position.y) * Math.min(1, delta * 2.2)
-    state.camera.position.x += (targetX - state.camera.position.x) * Math.min(1, delta * 1.6)
+    state.camera.position.z += (targetZ - state.camera.position.z) * Math.min(1, delta * 3.2)
+    state.camera.position.y += (targetY - state.camera.position.y) * Math.min(1, delta * 3.2)
     state.camera.lookAt(0, lookY, 0)
 
     // Explode peaks mid-deconstruction, resolves back to 0 (assembled) before the
     // laptop takes over, and stays assembled again for the final return-to-brand beat.
     let explodeTarget = 0
-    if (p >= 0.18 && p < 0.3) {
-      explodeTarget = THREE.MathUtils.smoothstep(p, 0.18, 0.3)
-    } else if (p >= 0.3 && p < 0.4) {
-      explodeTarget = 1 - THREE.MathUtils.smoothstep(p, 0.3, 0.4)
-    }
-    explode.current += (explodeTarget - explode.current) * Math.min(1, delta * 3)
+    if (p >= 0.14 && p < 0.24) explodeTarget = sm(p, 0.14, 0.24)
+    else if (p >= 0.24 && p < 0.33) explodeTarget = 1 - sm(p, 0.24, 0.33)
+    explode.current += (explodeTarget - explode.current) * Math.min(1, delta * 4)
 
-    // Logo hides while the laptop/code/website/business beats own the screen,
-    // then scales back up for the final "return to brand" beat.
+    // The mark implodes into the laptop (spin + shrink + shockwave), returns for the finale.
     let logoScale = 1
-    if (p >= 0.42 && p < 0.9) {
-      logoScale = 0.0001
-    } else if (p >= 0.9 && p < 1) {
-      logoScale = THREE.MathUtils.smoothstep(p, 0.9, 1)
-    }
+    if (p >= 0.33 && p < 0.9) logoScale = Math.max(0.0001, 1 - sm(p, 0.33, 0.43))
+    else if (p >= 0.9) logoScale = Math.max(0.0001, sm(p, 0.9, 1))
     if (logoGroup.current) {
       logoGroup.current.scale.setScalar(logoScale)
+      logoGroup.current.rotation.y = p < 0.9 ? sm(p, 0.33, 0.43) * Math.PI * 1.5 : (1 - sm(p, 0.9, 1)) * -Math.PI
+      // Scale about the mark's own centre, drifting toward the laptop screen while shrinking.
+      logoGroup.current.position.y = (p < 0.9 ? 1.3 : 1.55) * (1 - logoScale)
     }
   })
 
@@ -145,7 +129,6 @@ export default function JourneyScene({
         <StudioLights />
         <JourneyRig progressRef={progressRef} />
         <LaptopModel progressRef={progressRef} position={[-0.3, 1.2, 0]} />
-        <FloatingPanels progressRef={progressRef} />
         <StreakParticles count={isTouch ? 18 : 30} color="#D71920" spread={[22, 12, 14]} />
         <StreakParticles count={isTouch ? 12 : 20} color="#ffffff" spread={[20, 10, 12]} speed={4} />
         <Grid
