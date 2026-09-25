@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useReducedMotion } from '../hooks/useMedia'
+import { useT } from '../i18n'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function AlbanianIdentity() {
+  const t = useT()
   const sectionRef = useRef<HTMLElement>(null)
   const leftRef = useRef<HTMLImageElement>(null)
   const rightRef = useRef<HTMLImageElement>(null)
@@ -53,7 +55,7 @@ export default function AlbanianIdentity() {
       />
 
       <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 text-center">
-        <span className="eyebrow eyebrow-line">Albanian Identity</span>
+        <span className="eyebrow eyebrow-line">{t('Albanian Identity')}</span>
 
         <div className="relative mt-10 flex h-40 w-full max-w-md items-center justify-center sm:h-52">
           <img
@@ -75,11 +77,10 @@ export default function AlbanianIdentity() {
 
         <div ref={textRef} className="mt-8">
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight tracking-tight text-bone">
-            Heritage <span className="text-red">+</span> Technology
+            {t('Heritage')} <span className="text-red">+</span> {t('Technology')}
           </h2>
           <p className="mx-auto mt-5 max-w-lg text-sm sm:text-base text-bone/55 leading-relaxed">
-            The double-headed eagle at the center of our identity is a quiet nod to where we build from —
-            carried into every interface, system and line of code we ship.
+            {t('The double-headed eagle at the center of our identity is a quiet nod to where we build from — carried into every interface, system and line of code we ship.')}
           </p>
         </div>
       </div>

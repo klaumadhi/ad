@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import LogoModel from './LogoModel'
 import StreakParticles from './StreakParticles'
 import { heroIntro } from '../lib/intro'
+import { useInView } from '../hooks/useInView'
 
 function Rig({ isTouch }: { isTouch: boolean }) {
   useFrame((state) => {
@@ -82,13 +83,16 @@ function ResponsiveCamera() {
 export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
   const scrollRotation = useRef(0)
   const [ready, setReady] = useState(false)
+  const [wrapRef, inView] = useInView<HTMLDivElement>()
 
   return (
+    <div ref={wrapRef} className="absolute inset-0">
     <Canvas
-      dpr={isTouch ? [1, 1.3] : [1, 1.6]}
+      frameloop={inView ? 'always' : 'never'}
+      dpr={isTouch ? [1, 1.25] : [1, 1.5]}
       shadows={!isTouch}
       camera={{ position: [0, 1.1, 9], fov: 36 }}
-      gl={{ antialias: !isTouch, alpha: true, powerPreference: 'high-performance' }}
+      gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
       className="!absolute inset-0"
       style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.9s ease' }}
     >
@@ -137,5 +141,6 @@ export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
         <Vignette eskil={false} offset={0.15} darkness={0.7} />
       </EffectComposer>
     </Canvas>
+    </div>
   )
 }

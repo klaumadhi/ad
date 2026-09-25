@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { projects, type Project } from '../data/content'
+import type { Project } from '../data/content'
+import { useContent, useT } from '../i18n'
 import ProjectVisual from '../components/ProjectVisual'
 import { useIsMobile, useReducedMotion } from '../hooks/useMedia'
 import ProjectCaseStudy from '../components/ProjectCaseStudy'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const featured = projects.filter((p) => p.featured)
-const secondary = projects.filter((p) => !p.featured)
-const panelCount = featured.length + 1
 
 function FeaturedPanel({ project, onOpen, panelClass }: { project: Project; onOpen: (id: string) => void; panelClass: string }) {
+  const t = useT()
   return (
     <article className={panelClass}>
       <div className="grid gap-8 md:grid-cols-2 md:items-center md:gap-14">
@@ -40,7 +39,7 @@ function FeaturedPanel({ project, onOpen, panelClass }: { project: Project; onOp
             onClick={() => onOpen(project.id)}
             className="group mt-7 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-bone hover:text-red transition-colors"
           >
-            View Project
+            {t('View Project')}
             <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>→</span>
           </button>
         </div>
@@ -53,12 +52,13 @@ function FeaturedPanel({ project, onOpen, panelClass }: { project: Project; onOp
   )
 }
 
-function SecondaryPanel({ panelClass, onOpen }: { panelClass: string; onOpen: (id: string) => void }) {
+function SecondaryPanel({ panelClass, onOpen, secondary }: { panelClass: string; onOpen: (id: string) => void; secondary: Project[] }) {
+  const t = useT()
   return (
     <article className={panelClass}>
-      <p className="text-xs font-semibold uppercase tracking-widest text-bone/40">More Work</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-bone/40">{t('More Work')}</p>
       <h3 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-black uppercase leading-tight tracking-tight text-bone">
-        Also Shipped
+        {t('Also Shipped')}
       </h3>
       <div className="mt-8 grid gap-5 sm:grid-cols-3">
         {secondary.map((project) => (
@@ -84,6 +84,11 @@ function SecondaryPanel({ panelClass, onOpen }: { panelClass: string; onOpen: (i
 }
 
 export default function Work() {
+  const { projects } = useContent()
+  const t = useT()
+  const featured = projects.filter((p) => p.featured)
+  const secondary = projects.filter((p) => !p.featured)
+  const panelCount = featured.length + 1
   const sectionRef = useRef<HTMLElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -172,9 +177,9 @@ export default function Work() {
         <div className={isMobile ? 'relative w-full' : 'relative h-[100svh] w-full overflow-hidden'}>
           <div className={`${isMobile ? 'relative' : 'pointer-events-none absolute left-0 right-0 top-0'} z-10 flex items-center justify-between px-6 pt-24 sm:px-10 sm:pt-28`}>
             <div>
-              <span className="eyebrow eyebrow-line">Selected Work</span>
+              <span className="eyebrow eyebrow-line">{t('Selected Work')}</span>
               <h2 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-bone">
-                Case Studies
+                {t('Case Studies')}
               </h2>
             </div>
             {!isMobile && (
@@ -188,7 +193,7 @@ export default function Work() {
             {featured.map((project) => (
               <FeaturedPanel key={project.id} project={project} onOpen={openProject} panelClass={panelClass} />
             ))}
-            <SecondaryPanel panelClass={panelClass} onOpen={openProject} />
+            <SecondaryPanel panelClass={panelClass} onOpen={openProject} secondary={secondary} />
           </div>
         </div>
       </section>

@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { navLinks } from '../data/content'
+import { useContent, useT } from '../i18n'
 import { getLenis } from '../hooks/useLenis'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Footer() {
+  const { navLinks } = useContent()
+  const t = useT()
   const footerRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -61,18 +63,18 @@ export default function Footer() {
         </div>
 
         <p className="footer-fade text-xs font-semibold uppercase tracking-[0.2em] text-bone/35">
-          Web Development • Digital Products • E-Commerce • Business Systems
+          {t('Web Development • Digital Products • E-Commerce • Business Systems')}
         </p>
 
         <div className="footer-fade flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center">
-          <span className="text-xs text-bone/35">© {new Date().getFullYear()} Authentic Dev. All rights reserved.</span>
-          <span className="text-xs text-bone/35">Albanian web development studio.</span>
+          <span className="text-xs text-bone/35">© {new Date().getFullYear()} Authentic Dev. {t('All rights reserved.')}</span>
+          <span className="text-xs text-bone/35">{t('Albanian web development studio.')}</span>
         </div>
       </div>
 
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-24 left-1/2 h-64 w-64 -translate-x-1/2 opacity-[0.06] animate-[spin_60s_linear_infinite]"
+        className="pointer-events-none absolute -bottom-24 left-1/2 h-64 w-64 -translate-x-1/2 opacity-[0.06]"
       >
         <img src="/images/logo-mark-white.png" alt="" className="h-full w-full object-contain" />
       </div>

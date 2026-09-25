@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { startIntro, heroIntro } from '../lib/intro'
+import { useT } from '../i18n'
 
 const MIN_MS = 2200
 const MAX_MS = 9000
 
 export default function Preloader() {
+  const t = useT()
   const rootRef = useRef<HTMLDivElement>(null)
     const glowRef = useRef<HTMLDivElement>(null)
   const uiRef = useRef<HTMLDivElement>(null)
@@ -109,7 +111,7 @@ export default function Preloader() {
 
       <div ref={uiRef} className="absolute inset-x-0 bottom-[16%] mx-auto w-[min(70vw,360px)] text-center">
         <div className="mb-4 flex items-end justify-between font-display text-xs font-bold uppercase tracking-[0.3em] text-bone/60">
-          <span>Loading</span>
+          <span>{t('Loading')}</span>
           <span className="tabular-nums text-bone">{pct}%</span>
         </div>
         <div className="h-px w-full bg-white/15">

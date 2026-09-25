@@ -4,8 +4,10 @@ import MagneticButton from '../components/MagneticButton'
 import GlitchLine from '../components/GlitchLine'
 import { getLenis } from '../hooks/useLenis'
 import { useIsTouch } from '../hooks/useMedia'
+import { useT } from '../i18n'
 
 export default function CTA() {
+  const t = useT()
   const btnRef = useRef<HTMLDivElement>(null)
   const isTouch = useIsTouch()
 
@@ -33,13 +35,13 @@ export default function CTA() {
 
       <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 text-center">
         <h2 className="cta-heading font-display text-[10vw] sm:text-[7vw] md:text-7xl font-black uppercase leading-[0.94] tracking-tight text-bone">
-          <GlitchLine trigger=".cta-heading" delay={0}>Your Next</GlitchLine>
-          <GlitchLine trigger=".cta-heading" delay={0.1}>Digital Project</GlitchLine>
-          <GlitchLine trigger=".cta-heading" delay={0.2} className="text-red">Starts Here.</GlitchLine>
+          <GlitchLine trigger=".cta-heading" delay={0}>{t('Your Next')}</GlitchLine>
+          <GlitchLine trigger=".cta-heading" delay={0.1}>{t('Digital Project')}</GlitchLine>
+          <GlitchLine trigger=".cta-heading" delay={0.2} className="text-red">{t('Starts Here.')}</GlitchLine>
         </h2>
 
         <p className="mt-8 text-sm sm:text-base font-semibold uppercase tracking-widest text-bone/50">
-          Let's build it.
+          {t("Let's build it.")}
         </p>
 
         <MagneticButton
@@ -59,7 +61,7 @@ export default function CTA() {
               }}
             />
           </div>
-          <span className="relative z-10">Start a Project →</span>
+          <span className="relative z-10">{t('Start a Project →')}</span>
         </MagneticButton>
       </div>
     </section>

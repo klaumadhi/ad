@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { navLinks } from '../data/content'
+import { useContent, useLang, useT } from '../i18n'
 import MagneticButton from './MagneticButton'
 import { getLenis } from '../hooks/useLenis'
 
 export default function Navbar() {
+  const { navLinks } = useContent()
+  const { lang, setLang } = useLang()
+  const t = useT()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -62,19 +65,33 @@ export default function Navbar() {
             ))}
           </nav>
 
+          <div className="hidden md:flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-widest" role="group" aria-label="Language">
+            {(['en', 'sq'] as const).map((l) => (
+              <button
+                key={l}
+                data-cursor=""
+                onClick={() => setLang(l)}
+                aria-pressed={lang === l}
+                className={`px-2 py-1.5 transition-colors ${lang === l ? 'text-red' : 'text-bone/45 hover:text-bone'}`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+
           <MagneticButton
             as="button"
             cursorLabel=""
             onClick={() => goTo('#contact')}
             className="hidden md:inline-flex items-center gap-2 rounded-full bg-bone px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-void hover:bg-red hover:text-white"
           >
-            Let's Talk
+            {t("Let's Talk")}
             <span aria-hidden>→</span>
           </MagneticButton>
 
           <button
             className="md:hidden flex h-10 w-10 flex-col items-center justify-center gap-1.5"
-            aria-label="Toggle menu"
+            aria-label={t('Toggle menu')}
             onClick={() => setMenuOpen((v) => !v)}
           >
             <span
@@ -116,8 +133,15 @@ export default function Navbar() {
                 onClick={() => goTo('#contact')}
                 className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-red px-6 py-3 text-sm font-bold uppercase tracking-widest text-white"
               >
-                Let's Talk →
+                {t("Let's Talk")} →
               </motion.button>
+              <div className="mt-6 flex gap-4 text-sm font-bold uppercase tracking-widest">
+                {(['en', 'sq'] as const).map((l) => (
+                  <button key={l} onClick={() => setLang(l)} className={lang === l ? 'text-red' : 'text-bone/50'}>
+                    {l}
+                  </button>
+                ))}
+              </div>
             </nav>
           </motion.div>
         )}

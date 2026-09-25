@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { processSteps } from '../data/content'
+import { useContent, useT } from '../i18n'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Process() {
+  const { processSteps } = useContent()
+  const t = useT()
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -35,12 +37,12 @@ export default function Process() {
   return (
     <section id="process" ref={sectionRef} className="relative w-full bg-ink py-28 sm:py-36">
       <div className="mx-auto max-w-4xl px-6">
-        <span className="eyebrow eyebrow-line">How We Work</span>
+        <span className="eyebrow eyebrow-line">{t('How We Work')}</span>
         <h2 className="mt-5 font-display text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-bone">
-          The Process
+          {t('The Process')}
         </h2>
         <p className="mt-4 max-w-md text-sm sm:text-base text-bone/55">
-          Five steps, no shortcuts — the same path for every project, from first conversation to launch.
+          {t('Five steps, no shortcuts — the same path for every project, from first conversation to launch.')}
         </p>
 
         <div className="mt-16 border-t border-white/10">

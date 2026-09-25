@@ -3,6 +3,7 @@ import { getLenis } from '../hooks/useLenis'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '../data/content'
 import ProjectVisual from './ProjectVisual'
+import { useT } from '../i18n'
 
 const fields: { key: keyof Project; label: string }[] = [
   { key: 'challenge', label: 'Challenge' },
@@ -20,6 +21,7 @@ const fieldVariants = {
 }
 
 export default function ProjectCaseStudy({ project, onClose }: { project: Project | null; onClose: () => void }) {
+  const t = useT()
   useEffect(() => {
     if (!project) return
     const lenis = getLenis()
@@ -72,7 +74,7 @@ export default function ProjectCaseStudy({ project, onClose }: { project: Projec
                 {fields.map((f, i) => (
                   <motion.div key={f.key} custom={i} variants={fieldVariants} initial="hidden" animate="show">
                     <span className="text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">
-                      {f.label}
+                      {t(f.label)}
                     </span>
                     <p className="mt-3 text-sm sm:text-base text-bone/70 leading-relaxed">{project[f.key]}</p>
                   </motion.div>
@@ -85,7 +87,7 @@ export default function ProjectCaseStudy({ project, onClose }: { project: Projec
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.55 }}
               >
-                <span className="text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">Technology</span>
+                <span className="text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">{t('Technology')}</span>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {project.tech.map((t, i) => (
                     <motion.span

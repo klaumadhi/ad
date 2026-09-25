@@ -6,12 +6,14 @@ import GlitchLine from '../components/GlitchLine'
 import { useIsTouch, useReducedMotion } from '../hooks/useMedia'
 import { getLenis } from '../hooks/useLenis'
 import { onIntro } from '../lib/intro'
+import { useT } from '../i18n'
 
 const HeroScene = lazy(() => import('../three/HeroScene'))
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero() {
+  const t = useT()
   const sectionRef = useRef<HTMLElement>(null)
   const logoWrapRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -100,16 +102,16 @@ export default function Hero() {
 
         <h1 className="font-display font-black uppercase leading-[0.92] tracking-tight text-bone">
           <GlitchLine className="text-[10vw] sm:text-[7.5vw] md:text-[5.4vw]" delay={0.1}>
-            We Build <span className="text-bone/35">Digital</span>
+            {t('We Build')} <span className="text-bone/35">{t('Digital')}</span>
           </GlitchLine>
           <GlitchLine className="text-[10vw] sm:text-[7.5vw] md:text-[5.4vw]" delay={0.22}>
-            <span className="text-red">Experiences.</span>
+            <span className="text-red">{t('Experiences.', 'hero')}</span>
           </GlitchLine>
         </h1>
 
         <p className="hero-sub mt-6 max-w-xl text-balance text-sm sm:text-base">
-          <span className="text-bone">Websites and web applications, built around real businesses.</span>{' '}
-          <span className="text-bone/45">Not just design — systems that move the work forward.</span>
+          <span className="text-bone">{t('Websites and web applications, built around real businesses.')}</span>{' '}
+          <span className="text-bone/45">{t('Not just design — systems that move the work forward.')}</span>
         </p>
 
         <div className="mt-9 flex flex-col sm:flex-row items-center gap-4">
@@ -119,7 +121,7 @@ export default function Hero() {
             onClick={scrollToWork}
             className="hero-cta group inline-flex items-center gap-2.5 rounded-full bg-bone px-7 py-3.5 text-xs font-bold uppercase tracking-widest text-void hover:bg-red hover:text-white"
           >
-            Explore Our Work
+            {t('Explore Our Work')}
             <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>→</span>
           </MagneticButton>
           <MagneticButton
@@ -128,14 +130,14 @@ export default function Hero() {
             onClick={scrollToContact}
             className="hero-cta group inline-flex items-center gap-2.5 rounded-full border border-white/20 px-7 py-3.5 text-xs font-bold uppercase tracking-widest text-bone hover:border-red hover:text-red"
           >
-            Let's Build Something
+            {t("Let's Build Something")}
             <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>→</span>
           </MagneticButton>
         </div>
       </div>
 
       <div className="hero-scroll-cue pointer-events-none absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3 text-bone/50">
-        <span className="eyebrow text-[0.65rem]">Scroll to Explore</span>
+        <span className="eyebrow text-[0.65rem]">{t('Scroll to Explore')}</span>
         <span className="animate-bounce text-lg">↓</span>
       </div>
     </section>

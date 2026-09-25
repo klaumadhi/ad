@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useIsTouch, useReducedMotion } from '../hooks/useMedia'
+import { useT } from '../i18n'
 
 const JourneyScene = lazy(() => import('../three/JourneyScene'))
 
@@ -10,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger)
 const businessNodes = ['Customers', 'Orders', 'Payments', 'Inventory', 'Analytics']
 
 function MobileJourney() {
+  const t = useT()
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -66,9 +68,9 @@ function MobileJourney() {
     <section ref={sectionRef} className="relative w-full overflow-hidden bg-void py-24" aria-label="From code to growth — how a project comes together">
       <div className="grid-backdrop pointer-events-none absolute inset-0 opacity-20" />
       <div className="relative z-10 mx-auto max-w-md px-6">
-        <span className="eyebrow eyebrow-line">From Code To Growth</span>
+        <span className="eyebrow eyebrow-line">{t('From Code To Growth')}</span>
         <h2 className="mt-5 font-display text-4xl font-black uppercase leading-[0.95] tracking-tight text-bone">
-          How A Project <span className="text-red">Comes Together.</span>
+          {t('How A Project')} <span className="text-red">{t('Comes Together.')}</span>
         </h2>
 
         <div className="mt-16 space-y-2">
@@ -77,10 +79,10 @@ function MobileJourney() {
             <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-red to-transparent" aria-hidden />
             <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
             <div className="mj-item pb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">01 — Idea</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('01 — Idea')}</span>
               <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-charcoal/60 p-4">
                 <img src="/images/logo-mark-white.png" alt="Authentic Dev" className="h-9 w-auto" />
-                <p className="text-sm text-bone/60">An Albanian identity, rebuilt as a digital product.</p>
+                <p className="text-sm text-bone/60">{t('An Albanian identity, rebuilt as a digital product.')}</p>
               </div>
             </div>
           </div>
@@ -90,7 +92,7 @@ function MobileJourney() {
             <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-red to-transparent" aria-hidden />
             <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
             <div className="mj-item pb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">02 — Code</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('02 — Code')}</span>
               <div className="mt-4 rounded-xl border border-white/10 bg-void p-4 font-mono text-[11px] leading-relaxed text-bone/70">
                 <span className="text-[#6b7280]">{'// authentic-dev/product.ts'}</span>
                 {'\n'}
@@ -108,11 +110,11 @@ function MobileJourney() {
             <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-red to-transparent" aria-hidden />
             <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
             <div className="mj-item pb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">03 — Product</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('03 — Product')}</span>
               <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-void p-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-bone">Authentic Dev</span>
-                  <span className="rounded-full bg-red px-2 py-0.5 text-[8px] font-bold uppercase text-white">Let's Talk</span>
+                  <span className="rounded-full bg-red px-2 py-0.5 text-[8px] font-bold uppercase text-white">{t("Let's Talk")}</span>
                 </div>
                 <div className="mt-3 h-2 w-2/3 rounded bg-bone/70" />
                 <div className="mt-2 h-2 w-1/2 rounded bg-red" />
@@ -129,14 +131,14 @@ function MobileJourney() {
           <div className="mj-stage relative pl-8">
             <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
             <div className="mj-item">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">04 — Business</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('04 — Business')}</span>
               <div className="mt-4 flex flex-wrap gap-2">
                 {businessNodes.map((node) => (
                   <span
                     key={node}
                     className="mj-item rounded-full border border-red/30 bg-charcoal/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-bone/80"
                   >
-                    {node}
+                    {t(node)}
                   </span>
                 ))}
               </div>
@@ -147,10 +149,10 @@ function MobileJourney() {
         <div className="mj-stage mt-6 text-center">
           <div className="mj-item">
             <h3 className="font-display text-3xl font-black uppercase leading-[0.95] tracking-tight text-bone">
-              From Code <span className="block text-red">To Growth.</span>
+              {t('From Code')} <span className="block text-red">{t('To Growth.')}</span>
             </h3>
             <p className="mt-4 text-sm text-bone/55">
-              We build digital products that help businesses move forward.
+              {t('We build digital products that help businesses move forward.')}
             </p>
           </div>
         </div>
@@ -160,6 +162,7 @@ function MobileJourney() {
 }
 
 export default function CodeToGrowth() {
+  const t = useT()
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef(0)
   const isTouch = useIsTouch()
@@ -226,23 +229,23 @@ export default function CodeToGrowth() {
 
       <div className="pointer-events-none absolute inset-0 z-10">
         <div ref={heritageLabelRef} className="absolute left-1/2 top-[16%] -translate-x-1/2 text-center opacity-0">
-          <span className="eyebrow">Albanian Heritage, Rebuilt In Code</span>
+          <span className="eyebrow">{t('Albanian Heritage, Rebuilt In Code')}</span>
         </div>
 
         <div ref={gridLabelRef} className="absolute left-1/2 top-[16%] -translate-x-1/2 text-center opacity-0">
-          <span className="eyebrow">A Digital Foundation</span>
+          <span className="eyebrow">{t('A Digital Foundation')}</span>
         </div>
 
         {/* Business ecosystem chips */}
         <div ref={businessRef} className="absolute inset-0 flex flex-col items-center justify-end gap-6 pb-[14%] opacity-0">
-          <span className="eyebrow eyebrow-line">The Product Becomes A Business</span>
+          <span className="eyebrow eyebrow-line">{t('The Product Becomes A Business')}</span>
           <div className="flex flex-wrap justify-center gap-3 px-6">
             {businessNodes.map((node) => (
               <span
                 key={node}
                 className="rounded-full border border-red/30 bg-charcoal/80 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-bone/80 backdrop-blur-sm"
               >
-                {node}
+                {t(node)}
               </span>
             ))}
           </div>
@@ -251,11 +254,11 @@ export default function CodeToGrowth() {
         {/* Return to brand */}
         <div ref={finalRef} className="absolute inset-0 flex flex-col items-center justify-end pb-20 text-center opacity-0">
           <h2 className="font-display text-[11vw] sm:text-[7vw] md:text-6xl font-black uppercase leading-[0.95] tracking-tight text-bone">
-            <span className="block">From Code</span>
-            <span className="block text-red">To Growth.</span>
+            <span className="block">{t('From Code')}</span>
+            <span className="block text-red">{t('To Growth.')}</span>
           </h2>
           <p className="mt-5 max-w-md px-6 text-sm sm:text-base text-bone/55">
-            We build digital products that help businesses move forward.
+            {t('We build digital products that help businesses move forward.')}
           </p>
         </div>
       </div>

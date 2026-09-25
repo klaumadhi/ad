@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import MagneticButton from '../components/MagneticButton'
+import { useT } from '../i18n'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -12,6 +13,7 @@ const fieldClass =
   'w-full border-b border-white/15 bg-transparent py-3 text-base text-bone placeholder:text-bone/30 focus:border-red focus:outline-none transition-colors duration-300'
 
 export default function Contact() {
+  const t = useT()
   const [sent, setSent] = useState(false)
   const [projectType, setProjectType] = useState(projectTypes[0])
   const sectionRef = useRef<HTMLElement>(null)
@@ -69,25 +71,25 @@ export default function Contact() {
     <section id="contact" ref={sectionRef} className="relative w-full bg-ink py-28 sm:py-36">
       <div className="mx-auto grid max-w-6xl gap-14 px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
         <div>
-          <span className="eyebrow eyebrow-line">Get In Touch</span>
+          <span className="eyebrow eyebrow-line">{t('Get In Touch')}</span>
           <h2 className="mt-6 font-display text-4xl sm:text-5xl md:text-6xl font-black uppercase leading-[0.96] tracking-tight text-bone">
-            <span className="block overflow-hidden"><span className="contact-line block">Let's Build</span></span>
-            <span className="block overflow-hidden"><span className="contact-line block">Something</span></span>
-            <span className="block overflow-hidden"><span className="contact-line block text-red">Authentic.</span></span>
+            <span className="block overflow-hidden"><span className="contact-line block">{t("Let's Build")}</span></span>
+            <span className="block overflow-hidden"><span className="contact-line block">{t('Something')}</span></span>
+            <span className="block overflow-hidden"><span className="contact-line block text-red">{t('Authentic.')}</span></span>
           </h2>
 
           <div className="contact-info-group mt-12 space-y-6 text-sm">
             <div className="contact-info-row">
-              <span className="block text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">Email</span>
-              <span className="mt-1 block text-bone/60 italic">Add contact email — placeholder</span>
+              <span className="block text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">{t('Email')}</span>
+              <span className="mt-1 block text-bone/60 italic">{t('Add contact email — placeholder')}</span>
             </div>
             <div className="contact-info-row">
-              <span className="block text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">Location</span>
-              <span className="mt-1 block text-bone/60">Albania — working with businesses remotely</span>
+              <span className="block text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">{t('Location')}</span>
+              <span className="mt-1 block text-bone/60">{t('Albania — working with businesses remotely')}</span>
             </div>
             <div className="contact-info-row">
-              <span className="block text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">Social</span>
-              <span className="mt-1 block text-bone/60 italic">Social links coming soon</span>
+              <span className="block text-[0.65rem] font-bold uppercase tracking-widest text-bone/40">{t('Social')}</span>
+              <span className="mt-1 block text-bone/60 italic">{t('Social links coming soon')}</span>
             </div>
           </div>
         </div>
@@ -102,31 +104,31 @@ export default function Contact() {
               <span className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-red/40 text-red text-xl">
                 ✓
               </span>
-              <h3 className="font-display text-2xl font-bold uppercase text-bone">Message Received</h3>
+              <h3 className="font-display text-2xl font-bold uppercase text-bone">{t('Message Received')}</h3>
               <p className="mt-3 text-sm text-bone/55">
-                Thanks for reaching out — this form is a working template ready to connect to your inbox.
+                {t('Thanks for reaching out — this form is a working template ready to connect to your inbox.')}
               </p>
             </motion.div>
           ) : (
             <form onSubmit={onSubmit} className="contact-form grid gap-7">
               <div className="contact-field grid gap-7 sm:grid-cols-2">
                 <div>
-                  <label className="eyebrow" htmlFor="name">Name</label>
-                  <input id="name" name="name" required className={fieldClass} placeholder="Your name" />
+                  <label className="eyebrow" htmlFor="name">{t('Name')}</label>
+                  <input id="name" name="name" required className={fieldClass} placeholder={t('Your name')} />
                 </div>
                 <div>
-                  <label className="eyebrow" htmlFor="email">Email</label>
+                  <label className="eyebrow" htmlFor="email">{t('Email')}</label>
                   <input id="email" name="email" type="email" required className={fieldClass} placeholder="you@company.com" />
                 </div>
               </div>
 
               <div className="contact-field">
-                <label className="eyebrow" htmlFor="company">Company</label>
-                <input id="company" name="company" className={fieldClass} placeholder="Business name" />
+                <label className="eyebrow" htmlFor="company">{t('Company')}</label>
+                <input id="company" name="company" className={fieldClass} placeholder={t('Business name')} />
               </div>
 
               <div className="contact-field">
-                <span className="eyebrow mb-3 block">Project Type</span>
+                <span className="eyebrow mb-3 block">{t('Project Type')}</span>
                 <div className="flex flex-wrap gap-2">
                   {projectTypes.map((type) => (
                     <button
@@ -139,21 +141,21 @@ export default function Contact() {
                           : 'border-white/15 text-bone/55 hover:border-white/30'
                       }`}
                     >
-                      {type}
+                      {t(type)}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="contact-field">
-                <label className="eyebrow" htmlFor="message">Message</label>
+                <label className="eyebrow" htmlFor="message">{t('Message')}</label>
                 <textarea
                   id="message"
                   name="message"
                   required
                   rows={4}
                   className={`${fieldClass} resize-none`}
-                  placeholder="Tell us about your project…"
+                  placeholder={t('Tell us about your project…')}
                 />
               </div>
 
@@ -163,7 +165,7 @@ export default function Contact() {
                 cursorLabel="Send"
                 className="contact-field mt-2 inline-flex w-fit items-center gap-2.5 rounded-full bg-red px-8 py-4 text-xs font-bold uppercase tracking-widest text-white hover:bg-red-deep"
               >
-                Send Project →
+                {t('Send Project →')}
               </MagneticButton>
             </form>
           )}

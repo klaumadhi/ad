@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { services } from '../data/content'
+import { useContent, useT } from '../i18n'
 import { useIsTouch } from '../hooks/useMedia'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Services() {
+  const { services } = useContent()
+  const t = useT()
   const [active, setActive] = useState(0)
   const sectionRef = useRef<HTMLElement>(null)
   const isTouch = useIsTouch()
@@ -40,13 +42,13 @@ export default function Services() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="eyebrow eyebrow-line">What We Do</span>
+            <span className="eyebrow eyebrow-line">{t('What We Do')}</span>
             <h2 className="mt-5 font-display text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-bone">
-              Services
+              {t('Services')}
             </h2>
           </div>
           <p className="max-w-xs text-sm text-bone/50">
-            Six disciplines, one studio — everything a business needs to operate confidently online.
+            {t('Six disciplines, one studio — everything a business needs to operate confidently online.')}
           </p>
         </div>
 

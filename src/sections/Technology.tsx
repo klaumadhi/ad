@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { technologies } from '../data/content'
+import { useContent, useT } from '../i18n'
 import { useIsTouch } from '../hooks/useMedia'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Technology() {
+  const { technologies } = useContent()
+  const t = useT()
   const gridRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const [hovered, setHovered] = useState<string | null>(null)
@@ -43,12 +45,12 @@ export default function Technology() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="eyebrow eyebrow-line">Technology</span>
+            <span className="eyebrow eyebrow-line">{t('Technology')}</span>
             <h2 className="mt-5 font-display text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-bone">
-              The Stack
+              {t('The Stack')}
             </h2>
           </div>
-          <p className="max-w-xs text-sm text-bone/50">Modern, production-proven tools chosen for reliability.</p>
+          <p className="max-w-xs text-sm text-bone/50">{t('Modern, production-proven tools chosen for reliability.')}</p>
         </div>
 
         <div

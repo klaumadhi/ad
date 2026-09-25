@@ -1,7 +1,9 @@
 import type { Project } from '../data/content'
 import { useIsMobile } from '../hooks/useMedia'
+import { useT } from '../i18n'
 
 export default function ProjectVisual({ project, className = '' }: { project: Project; className?: string }) {
+  const t = useT()
   const isMobile = useIsMobile()
   const src = (isMobile && project.imageMobile) || project.image
 
@@ -16,7 +18,7 @@ export default function ProjectVisual({ project, className = '' }: { project: Pr
         />
         <div className="absolute inset-0 bg-gradient-to-t from-void/80 via-void/10 to-transparent" />
         <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-void/50 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-widest text-bone/60 backdrop-blur-sm">
-          {project.live ? 'Live Project' : 'Real Screenshot'}
+          {project.live ? t('Live Project') : t('Real Screenshot')}
         </span>
       </div>
     )
@@ -52,7 +54,7 @@ export default function ProjectVisual({ project, className = '' }: { project: Pr
 
       <div className="absolute inset-0 bg-gradient-to-t from-void/70 via-transparent to-transparent" />
       <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-void/50 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-widest text-bone/50 backdrop-blur-sm">
-        {project.logo ? 'Real Brand' : 'Preview — placeholder'}
+        {project.logo ? t('Real Brand') : t('Preview — placeholder')}
       </span>
     </div>
   )

@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ecosystemItems } from '../data/content'
+import { useContent, useT } from '../i18n'
 import { useIsMobile } from '../hooks/useMedia'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Ecosystem() {
+  const { ecosystemItems } = useContent()
+  const t = useT()
   const sectionRef = useRef<HTMLDivElement>(null)
   const orbitRef = useRef<HTMLDivElement>(null)
   const mobileRef = useRef<HTMLDivElement>(null)
@@ -86,12 +88,12 @@ export default function Ecosystem() {
     <section className="relative w-full overflow-hidden bg-ink py-28 sm:py-36">
       <div className="grid-backdrop pointer-events-none absolute inset-0 opacity-20" />
       <div className="relative z-10 mx-auto max-w-6xl px-6 text-center">
-        <span className="eyebrow eyebrow-line">What We Build</span>
+        <span className="eyebrow eyebrow-line">{t('What We Build')}</span>
         <h2 className="mx-auto mt-5 max-w-2xl font-display text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-bone">
-          A Digital Ecosystem
+          {t('A Digital Ecosystem')}
         </h2>
         <p className="mx-auto mt-4 max-w-md text-sm sm:text-base text-bone/55">
-          Every product we build connects back to the same foundation — clean systems, built to work together.
+          {t('Every product we build connects back to the same foundation — clean systems, built to work together.')}
         </p>
       </div>
 
