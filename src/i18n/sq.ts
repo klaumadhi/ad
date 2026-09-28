@@ -260,7 +260,7 @@ export const sq: Record<string, string> = {
   Something: "Diçka",
   "Authentic.": "Autentike.",
   Email: "Email",
-  "Add contact email — placeholder": "Shto email-in e kontaktit — placeholder",
+  "authentic.dev.al@gmail.com": "authentic.dev.al@gmail.com",
   Location: "Vendndodhja",
   "Albania — working with businesses remotely":
     "Shqipëri — punojmë me biznese kudo, në distancë",
