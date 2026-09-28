@@ -36,11 +36,14 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
         offIntro = onIntro(() => tl.play())
       }
 
-      gsap.set(el, { yPercent: 100 })
-      tl.set(el, { yPercent: 100 })
+      // yPercent alone can still leak a sliver of a tall glyph (e.g. the diaeresis on
+      // "ë") past the clip while hidden, since diacritics overshoot the line box —
+      // opacity:0 belts it so nothing is visible before the reveal plays.
+      gsap.set(el, { yPercent: 100, opacity: 0 })
+      tl.set(el, { yPercent: 100, opacity: 0 })
         .set([red, cyan], { opacity: 0 })
-        .to(el, { yPercent: 0, duration: 0.01 })
-        .to(el, { yPercent: 0, duration: 0.62, ease: 'power4.out' }, 0)
+        .to(el, { yPercent: 0, opacity: 1, duration: 0.01 })
+        .to(el, { yPercent: 0, opacity: 1, duration: 0.62, ease: 'power4.out' }, 0)
         .to(
           red,
           { opacity: 0.75, x: -6, duration: 0.05, repeat: 4, yoyo: true, ease: 'none' },

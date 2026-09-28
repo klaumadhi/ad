@@ -26,7 +26,7 @@ export const sq: Record<string, string> = {
     "Jo thjesht dizajn - sisteme që e çojnë biznesin përpara.",
   "Explore Our Work": "Projektet Tona",
   "Let's Build Something": "Le të Ndërtojmë Diçka",
-  "Scroll to Explore": "Zbrit për të Zbuluar",
+  "Scroll to Explore": "Shiko më shumë",
 
   // Code to growth
   "Albanian Heritage, Rebuilt In Code":
