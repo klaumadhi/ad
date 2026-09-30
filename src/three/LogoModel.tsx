@@ -64,7 +64,7 @@ const EXTRUDE_SETTINGS = {
   bevelThickness: 4,
   bevelSize: 2.4,
   bevelSegments: 4,
-  curveSegments: 8,
+  curveSegments: 14,
 }
 
 function svgToGeometry(data: SVGResult) {

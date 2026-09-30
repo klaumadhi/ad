@@ -107,10 +107,10 @@ export default function JourneyScene({
     <div ref={wrapRef} className="absolute inset-0">
     <Canvas
       frameloop={inView ? 'always' : 'never'}
-      dpr={isTouch ? [1, 1.25] : [1, 1.4]}
+      dpr={isTouch ? [1.5, 2] : [1, 1.4]}
       shadows={!isTouch}
       camera={{ position: [0, 1.1, 9], fov: 36 }}
-      gl={{ antialias: !isTouch, alpha: true, powerPreference: 'high-performance' }}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       className="!absolute inset-0"
     >
       <fog attach="fog" args={['#eef1fb', 11, 26]} />

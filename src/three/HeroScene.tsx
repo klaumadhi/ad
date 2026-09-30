@@ -84,10 +84,10 @@ export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
     <div ref={wrapRef} className="absolute inset-0">
       <Canvas
         frameloop={inView ? 'always' : 'never'}
-        dpr={isTouch ? [1, 1.25] : [1, 1.5]}
+        dpr={isTouch ? [1.5, 2] : [1, 1.5]}
         shadows={!isTouch}
         camera={{ position: [0, 1.1, 9], fov: 36 }}
-        gl={{ antialias: !isTouch, alpha: true, powerPreference: 'high-performance' }}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         className="!absolute inset-0"
         style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.9s ease' }}
       >
