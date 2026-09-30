@@ -26,11 +26,6 @@ export default function Preloader() {
     const tasks: Promise<unknown>[] = [
       import('../three/HeroScene'),
       document.fonts.ready,
-      new Promise((res) => {
-        const img = new Image()
-        img.onload = img.onerror = () => res(null)
-        img.src = '/images/logo-mark-white.png'
-      }),
       fetch('/images/logo-dark.svg').catch(() => null),
       fetch('/images/logo-red.svg').catch(() => null),
     ]
@@ -91,7 +86,10 @@ export default function Preloader() {
       tl.to(uiRef.current, { opacity: 0, y: 16, duration: 0.45, ease: 'power2.in' })
         .to(glowRef.current, { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0.2)
         .to(heroIntro, { k: 0, duration: 1.7, ease: 'power3.inOut' }, 0.35)
-        .add(() => startIntro(), 1.3)
+        .add(() => {
+          html.classList.remove('is-loading')
+          startIntro()
+        }, 1.3)
     }
 
     return () => {
@@ -106,16 +104,20 @@ export default function Preloader() {
     <div ref={rootRef} className="pointer-events-none fixed inset-0 z-[300]">
       <div
         ref={glowRef}
-        className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_50%_42%,rgba(215,25,32,0.22),transparent_55%)]"
+        className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_50%_42%,rgba(91,76,255,0.16),transparent_55%)]"
       />
 
-      <div ref={uiRef} className="absolute inset-x-0 bottom-[16%] mx-auto w-[min(70vw,360px)] text-center">
-        <div className="mb-4 flex items-end justify-between font-display text-xs font-bold uppercase tracking-[0.3em] text-bone/60">
+      <div ref={uiRef} className="absolute inset-x-0 bottom-[15%] mx-auto w-[min(72vw,380px)] text-center">
+        <div className="mb-3.5 flex items-end justify-between font-mono text-[0.68rem] font-medium uppercase tracking-[0.24em] text-bone/55">
           <span>{t('Loading')}</span>
           <span className="tabular-nums text-bone">{pct}%</span>
         </div>
-        <div className="h-px w-full bg-white/15">
-          <div ref={barRef} className="h-px origin-left bg-red shadow-[0_0_12px_rgba(215,25,32,0.9)]" style={{ transform: 'scaleX(0)' }} />
+        <div className="h-[5px] w-full overflow-hidden rounded-full bg-bone/10">
+          <div
+            ref={barRef}
+            className="h-full origin-left rounded-full bg-gradient-to-r from-accent via-accent-2 to-accent-3 shadow-[0_0_18px_rgba(91,76,255,0.55)]"
+            style={{ transform: 'scaleX(0)' }}
+          />
         </div>
       </div>
     </div>

@@ -4,6 +4,60 @@ import * as THREE from 'three'
 import { SVGLoader, type SVGResult } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
+const ART_W = 1064
+const ART_H = 635
+const FRONT_Z = 22.8 // just proud of the extrusion's front face (depth 36 + bevel 4, centred)
+
+/**
+ * Splits the real logo artwork into two transparent plates — the graphite letters and the red eagles
+ * (with their eye highlights) — so each can sit on the front of its own extruded body and still fly
+ * apart independently. This keeps every detail of the original mark on the 3D version.
+ */
+function useLogoPlates() {
+  const art = useLoader(THREE.TextureLoader, '/images/logo-mark-transparent.png')
+  return useMemo(() => {
+    const img = art.image as HTMLImageElement
+    const w = img.naturalWidth || ART_W
+    const h = img.naturalHeight || ART_H
+    const src = document.createElement('canvas')
+    src.width = w
+    src.height = h
+    const sctx = src.getContext('2d', { willReadFrequently: true })!
+    sctx.drawImage(img, 0, 0)
+    const px = sctx.getImageData(0, 0, w, h).data
+
+    const make = (pick: (r: number, g: number, b: number) => number) => {
+      const c = document.createElement('canvas')
+      c.width = w
+      c.height = h
+      const ctx = c.getContext('2d')!
+      const out = ctx.createImageData(w, h)
+      for (let i = 0; i < px.length; i += 4) {
+        const k = pick(px[i], px[i + 1], px[i + 2])
+        out.data[i] = px[i]
+        out.data[i + 1] = px[i + 1]
+        out.data[i + 2] = px[i + 2]
+        out.data[i + 3] = px[i + 3] * k
+      }
+      ctx.putImageData(out, 0, 0)
+      const t = new THREE.CanvasTexture(c)
+      t.colorSpace = THREE.SRGBColorSpace
+      t.anisotropy = 8
+      t.needsUpdate = true
+      return t
+    }
+    const clamp01 = (v: number) => Math.max(0, Math.min(1, v))
+    // Red eagle body plus the near-white eye highlights belong to the red plate.
+    const redness = (r: number, g: number, b: number) =>
+      Math.max(clamp01((r - Math.max(g, b) - 30) / 50), clamp01((Math.min(r, g, b) - 190) / 40))
+
+    return {
+      dark: make((r, g, b) => 1 - redness(r, g, b)),
+      red: make((r, g, b) => redness(r, g, b)),
+    }
+  }, [art])
+}
+
 const EXTRUDE_SETTINGS = {
   depth: 36,
   bevelEnabled: true,
@@ -45,6 +99,7 @@ export default function LogoModel({
   explodeRef,
 }: LogoModelProps) {
   const [darkSvg, redSvg] = useLoader(SVGLoader, ['/images/logo-dark.svg', '/images/logo-red.svg'])
+  const plates = useLogoPlates()
 
   const darkGeo = useMemo(() => {
     const g = svgToGeometry(darkSvg)
@@ -66,6 +121,10 @@ export default function LogoModel({
     const box = new THREE.Box3().setFromObject(new THREE.Mesh(svgToGeometry(darkSvg)))
     return box.getCenter(new THREE.Vector3())
   }, [darkSvg])
+
+  // Where the artwork's centre lands inside each body's own frame (svg y is flipped in 3D).
+  const darkPlate = useMemo(() => new THREE.Vector3(ART_W / 2 - offset.x, -ART_H / 2 - offset.y, FRONT_Z), [offset])
+  const redPlate = useMemo(() => new THREE.Vector3(ART_W / 2 - red.center.x, -ART_H / 2 - red.center.y, FRONT_Z), [red])
 
   const darkEdges = useMemo(() => new THREE.EdgesGeometry(darkGeo, 28), [darkGeo])
   const redEdges = useMemo(() => new THREE.EdgesGeometry(red.geo, 28), [red])
@@ -132,37 +191,70 @@ export default function LogoModel({
     <group ref={group} scale={normScale} position={position}>
       <group ref={darkMesh}>
         <mesh geometry={darkGeo} castShadow receiveShadow>
-          <meshStandardMaterial color="#4a4e57" metalness={0.92} roughness={0.32} envMapIntensity={1.4} />
+          <meshStandardMaterial color="#1a2160" metalness={0.85} roughness={0.3} envMapIntensity={1.2} />
+        </mesh>
+        <mesh position={darkPlate} renderOrder={2}>
+          <planeGeometry args={[ART_W, ART_H]} />
+          {/* Self-lit so the brand colours stay exact; the clear coat adds the glossy reflections. */}
+          <meshPhysicalMaterial
+            map={plates.dark}
+            emissiveMap={plates.dark}
+            emissive="#ffffff"
+            emissiveIntensity={1}
+            color="#000000"
+            transparent
+            depthWrite={false}
+            toneMapped={false}
+            roughness={1}
+            specularIntensity={0}
+            metalness={0}
+            clearcoat={0.28}
+            clearcoatRoughness={0.1}
+            envMapIntensity={0.25}
+          />
         </mesh>
       </group>
       <group ref={redMesh} position={[redBase.x, redBase.y, redBase.z]}>
         <mesh geometry={red.geo} castShadow receiveShadow>
-          <meshStandardMaterial
-            color="#D71920"
-            metalness={0.4}
-            roughness={0.38}
-            emissive="#8c0f14"
-            emissiveIntensity={0.35}
-            envMapIntensity={1.1}
+          <meshStandardMaterial color="#9b1c24" metalness={0.35} roughness={0.4} emissive="#3a0508" emissiveIntensity={0.3} envMapIntensity={1} />
+        </mesh>
+        <mesh position={redPlate} renderOrder={3}>
+          <planeGeometry args={[ART_W, ART_H]} />
+          {/* Self-lit so the brand colours stay exact; the clear coat adds the glossy reflections. */}
+          <meshPhysicalMaterial
+            map={plates.red}
+            emissiveMap={plates.red}
+            emissive="#ffffff"
+            emissiveIntensity={1}
+            color="#000000"
+            transparent
+            depthWrite={false}
+            toneMapped={false}
+            roughness={1}
+            specularIntensity={0}
+            metalness={0}
+            clearcoat={0.28}
+            clearcoatRoughness={0.1}
+            envMapIntensity={0.25}
           />
         </mesh>
       </group>
 
       <group ref={ghost} visible={false}>
         <lineSegments geometry={darkEdges}>
-          <lineBasicMaterial ref={ghostMat} color="#ff5b5f" transparent opacity={0} toneMapped={false} blending={THREE.AdditiveBlending} depthWrite={false} />
+          <lineBasicMaterial ref={ghostMat} color="#5b4cff" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
         </lineSegments>
         <lineSegments geometry={redEdges} position={[redBase.x, redBase.y, redBase.z]}>
-          <lineBasicMaterial ref={ghostMat2} color="#ffffff" transparent opacity={0} toneMapped={false} blending={THREE.AdditiveBlending} depthWrite={false} />
+          <lineBasicMaterial ref={ghostMat2} color="#17b3f2" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
         </lineSegments>
       </group>
       <mesh ref={ring1} visible={false}>
         <torusGeometry args={[600, 3, 8, 96]} />
-        <meshBasicMaterial color="#ff3038" transparent opacity={0} toneMapped={false} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <meshBasicMaterial color="#5b4cff" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
       </mesh>
       <mesh ref={ring2} visible={false}>
         <torusGeometry args={[600, 2, 8, 96]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0} toneMapped={false} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <meshBasicMaterial color="#17b3f2" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
       </mesh>
     </group>
   )

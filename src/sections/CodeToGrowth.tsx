@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useIsTouch, useReducedMotion } from '../hooks/useMedia'
 import { useT } from '../i18n'
+import Logo from '../components/Logo'
 
 const JourneyScene = lazy(() => import('../three/JourneyScene'))
 
@@ -65,23 +66,22 @@ function MobileJourney() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative w-full overflow-hidden bg-void py-24" aria-label="From code to growth — how a project comes together">
-      <div className="grid-backdrop pointer-events-none absolute inset-0 opacity-20" />
+    <section ref={sectionRef} className="relative w-full overflow-hidden py-24" aria-label="From code to growth — how a project comes together">
       <div className="relative z-10 mx-auto max-w-md px-6">
         <span className="eyebrow eyebrow-line">{t('From Code To Growth')}</span>
-        <h2 className="mt-5 font-display text-4xl font-black uppercase leading-[0.95] tracking-tight text-bone">
-          {t('How A Project')} <span className="text-red">{t('Comes Together.')}</span>
+        <h2 className="mt-5 font-display text-4xl font-semibold leading-[0.95] tracking-tight text-bone">
+          {t('How A Project')} <span className="text-accent">{t('Comes Together.')}</span>
         </h2>
 
         <div className="mt-16 space-y-2">
           {/* Stage 1: Brand */}
           <div className="mj-stage relative pl-8">
-            <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-red to-transparent" aria-hidden />
-            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
+            <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-accent to-transparent" aria-hidden />
+            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-accent bg-void" aria-hidden />
             <div className="mj-item pb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('01 — Idea')}</span>
-              <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-charcoal/60 p-4">
-                <img src="/images/logo-mark-white.png" alt="Authentic Dev" className="h-9 w-auto" />
+              <span className="text-xs font-bold uppercase tracking-widest text-accent">{t('01 — Idea')}</span>
+              <div className="mt-4 flex items-center gap-3 rounded-xl border border-bone/10 bg-charcoal/60 p-4">
+                <Logo className="h-9" />
                 <p className="text-sm text-bone/60">{t('An Albanian identity, rebuilt as a digital product.')}</p>
               </div>
             </div>
@@ -89,14 +89,14 @@ function MobileJourney() {
 
           {/* Stage 2: Code */}
           <div className="mj-stage relative pl-8">
-            <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-red to-transparent" aria-hidden />
-            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
+            <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-accent to-transparent" aria-hidden />
+            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-accent bg-void" aria-hidden />
             <div className="mj-item pb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('02 — Code')}</span>
-              <div className="mt-4 rounded-xl border border-white/10 bg-void p-4 font-mono text-[11px] leading-relaxed text-bone/70">
+              <span className="text-xs font-bold uppercase tracking-widest text-accent">{t('02 — Code')}</span>
+              <div className="mt-4 rounded-xl border border-bone/10 bg-void p-4 font-mono text-[11px] leading-relaxed text-bone/70">
                 <span className="text-[#6b7280]">{'// authentic-dev/product.ts'}</span>
                 {'\n'}
-                <span className="text-red">const</span> product = {'{'}
+                <span className="text-accent">const</span> product = {'{'}
                 {'\n  interface: '}
                 <span className="text-[#8fd19e]">"modern"</span>,{'\n  scalable: '}
                 <span className="text-[#6fb8ff]">true</span>
@@ -107,21 +107,21 @@ function MobileJourney() {
 
           {/* Stage 3: Website */}
           <div className="mj-stage relative pl-8">
-            <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-red to-transparent" aria-hidden />
-            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
+            <span className="mj-line absolute left-0 top-2 h-full w-px bg-gradient-to-b from-accent to-transparent" aria-hidden />
+            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-accent bg-void" aria-hidden />
             <div className="mj-item pb-16">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('03 — Product')}</span>
-              <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-void p-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-accent">{t('03 — Product')}</span>
+              <div className="mt-4 overflow-hidden rounded-xl border border-bone/10 bg-void p-4">
+                <div className="flex items-center justify-between border-b border-bone/10 pb-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-bone">Authentic Dev</span>
-                  <span className="rounded-full bg-red px-2 py-0.5 text-[8px] font-bold uppercase text-white">{t("Let's Talk")}</span>
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-[8px] font-bold uppercase text-white">{t("Let's Talk")}</span>
                 </div>
                 <div className="mt-3 h-2 w-2/3 rounded bg-bone/70" />
-                <div className="mt-2 h-2 w-1/2 rounded bg-red" />
+                <div className="mt-2 h-2 w-1/2 rounded bg-accent" />
                 <div className="mt-3 grid grid-cols-3 gap-1.5">
-                  <div className="h-8 rounded border border-white/10 bg-charcoal" />
-                  <div className="h-8 rounded border border-white/10 bg-charcoal" />
-                  <div className="h-8 rounded border border-white/10 bg-charcoal" />
+                  <div className="h-8 rounded border border-bone/10 bg-charcoal" />
+                  <div className="h-8 rounded border border-bone/10 bg-charcoal" />
+                  <div className="h-8 rounded border border-bone/10 bg-charcoal" />
                 </div>
               </div>
             </div>
@@ -129,14 +129,14 @@ function MobileJourney() {
 
           {/* Stage 4: Business */}
           <div className="mj-stage relative pl-8">
-            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-red bg-void" aria-hidden />
+            <span className="mj-item absolute -left-[5px] top-1 h-3 w-3 rounded-full border-2 border-accent bg-void" aria-hidden />
             <div className="mj-item">
-              <span className="text-xs font-bold uppercase tracking-widest text-red">{t('04 — Business')}</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-accent">{t('04 — Business')}</span>
               <div className="mt-4 flex flex-wrap gap-2">
                 {businessNodes.map((node) => (
                   <span
                     key={node}
-                    className="mj-item rounded-full border border-red/30 bg-charcoal/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-bone/80"
+                    className="mj-item rounded-full border border-accent/30 bg-charcoal/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-bone/80"
                   >
                     {t(node)}
                   </span>
@@ -148,8 +148,8 @@ function MobileJourney() {
 
         <div className="mj-stage mt-6 text-center">
           <div className="mj-item">
-            <h3 className="font-display text-3xl font-black uppercase leading-[0.95] tracking-tight text-bone">
-              {t('From Code')} <span className="block text-red">{t('To Growth.')}</span>
+            <h3 className="font-display text-3xl font-semibold leading-[0.95] tracking-tight text-bone">
+              {t('From Code')} <span className="block text-accent">{t('To Growth.')}</span>
             </h3>
             <p className="mt-4 text-sm text-bone/55">
               {t('We build digital products that help businesses move forward.')}
@@ -172,6 +172,8 @@ export default function CodeToGrowth() {
   const gridLabelRef = useRef<HTMLDivElement>(null)
   const businessRef = useRef<HTMLDivElement>(null)
   const finalRef = useRef<HTMLDivElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+  const [step, setStep] = useState(0)
 
   useEffect(() => {
     if (reduced) return
@@ -189,6 +191,9 @@ export default function CodeToGrowth() {
           anticipatePin: 1,
           onUpdate: (self) => {
             progressRef.current = self.progress
+            const p = self.progress
+            setStep(p < 0.36 ? 0 : p < 0.68 ? 1 : p < 0.8 ? 2 : p < 0.94 ? 3 : 4)
+            if (barRef.current) barRef.current.style.transform = `scaleY(${p})`
           },
         },
       })
@@ -215,36 +220,56 @@ export default function CodeToGrowth() {
     return <MobileJourney />
   }
 
+  const steps = ['01 — Idea', '02 — Code', '03 — Product', '04 — Business']
+
   return (
     <section
       ref={sectionRef}
-      className="relative h-[100svh] w-full overflow-hidden bg-void"
+      className="relative h-[100svh] w-full overflow-hidden"
       aria-label="From code to growth — how a project comes together"
     >
-      <Suspense fallback={<div className="absolute inset-0 bg-void" />}>
+      <Suspense fallback={null}>
         <JourneyScene progressRef={progressRef} isTouch={isTouch} />
       </Suspense>
 
-      <div className="grid-backdrop pointer-events-none absolute inset-0 opacity-20" />
-
       <div className="pointer-events-none absolute inset-0 z-10">
-        <div ref={heritageLabelRef} className="absolute left-1/2 top-[16%] -translate-x-1/2 text-center opacity-0">
-          <span className="eyebrow">{t('Albanian Heritage, Rebuilt In Code')}</span>
+        <div ref={heritageLabelRef} className="absolute left-1/2 top-[15%] -translate-x-1/2 text-center opacity-0">
+          <span className="glass inline-block rounded-full px-5 py-2.5 font-mono text-[0.68rem] font-medium uppercase tracking-[0.16em] text-bone/70">
+            {t('Albanian Heritage, Rebuilt In Code')}
+          </span>
         </div>
 
-        <div ref={gridLabelRef} className="absolute left-1/2 top-[16%] -translate-x-1/2 text-center opacity-0">
-          <span className="eyebrow">{t('A Digital Foundation')}</span>
+        <div ref={gridLabelRef} className="absolute left-1/2 top-[15%] -translate-x-1/2 text-center opacity-0">
+          <span className="glass inline-block rounded-full px-5 py-2.5 font-mono text-[0.68rem] font-medium uppercase tracking-[0.16em] text-bone/70">
+            {t('A Digital Foundation')}
+          </span>
+        </div>
+
+        {/* Step rail */}
+        <div className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-stretch gap-4 sm:flex md:right-8">
+          <div className="flex flex-col justify-between py-1.5 text-right">
+            {steps.map((label, i) => (
+              <span
+                key={label}
+                className={`font-mono text-[0.62rem] font-medium uppercase tracking-[0.14em] transition-all duration-500 ${
+                  step === i ? 'translate-x-0 text-accent opacity-100' : 'translate-x-2 text-bone/30 opacity-70'
+                }`}
+              >
+                {t(label)}
+              </span>
+            ))}
+          </div>
+          <div className="relative w-[3px] overflow-hidden rounded-full bg-bone/10">
+            <div ref={barRef} className="h-full w-full origin-top rounded-full bg-gradient-to-b from-accent via-accent-2 to-accent-3" style={{ transform: 'scaleY(0)' }} />
+          </div>
         </div>
 
         {/* Business ecosystem chips */}
-        <div ref={businessRef} className="absolute inset-0 flex flex-col items-center justify-end gap-6 pb-[14%] opacity-0">
+        <div ref={businessRef} className="absolute inset-0 flex flex-col items-center justify-end gap-5 pb-[13%] opacity-0">
           <span className="eyebrow eyebrow-line">{t('The Product Becomes A Business')}</span>
-          <div className="flex flex-wrap justify-center gap-3 px-6">
+          <div className="flex flex-wrap justify-center gap-2.5 px-6">
             {businessNodes.map((node) => (
-              <span
-                key={node}
-                className="rounded-full border border-red/30 bg-charcoal/80 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-bone/80 backdrop-blur-sm"
-              >
+              <span key={node} className="glass rounded-full px-5 py-2.5 text-[0.8rem] font-medium text-bone/85">
                 {t(node)}
               </span>
             ))}
@@ -252,12 +277,12 @@ export default function CodeToGrowth() {
         </div>
 
         {/* Return to brand */}
-        <div ref={finalRef} className="absolute inset-0 flex flex-col items-center justify-end pb-20 text-center opacity-0">
-          <h2 className="font-display text-[11vw] sm:text-[7vw] md:text-6xl font-black uppercase leading-[0.95] tracking-tight text-bone">
+        <div ref={finalRef} className="absolute inset-0 flex flex-col items-center justify-end pb-16 text-center opacity-0 sm:pb-20">
+          <h2 className="font-display text-[11.5vw] font-semibold leading-[1.02] tracking-[-0.045em] text-bone sm:text-[6.6vw] md:text-6xl">
             <span className="block">{t('From Code')}</span>
-            <span className="block text-red">{t('To Growth.')}</span>
+            <span className="gradient-text-animated block">{t('To Growth.')}</span>
           </h2>
-          <p className="mt-5 max-w-md px-6 text-sm sm:text-base text-bone/55">
+          <p className="mt-5 max-w-md px-6 text-sm leading-relaxed text-bone/60 sm:text-base">
             {t('We build digital products that help businesses move forward.')}
           </p>
         </div>

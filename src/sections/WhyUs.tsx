@@ -1,59 +1,48 @@
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useRef } from 'react'
 import { useT } from '../i18n'
-
-gsap.registerPlugin(ScrollTrigger)
+import { useReveal } from '../hooks/useReveal'
+import ScrubText from '../components/ScrubText'
 
 export default function WhyUs() {
-  const t = useT()
   const sectionRef = useRef<HTMLElement>(null)
+  const t = useT()
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>('.why-line').forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          { yPercent: 100, opacity: 0 },
-          {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1,
-            delay: i * 0.07,
-            ease: 'power4.out',
-            scrollTrigger: { trigger: el, start: 'top 90%' },
-          },
-        )
-      })
-      gsap.fromTo(
-        '.why-fade',
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: '.why-fade', start: 'top 88%' },
-        },
-      )
-    }, sectionRef)
-    return () => ctx.revert()
-  }, [])
+  useReveal(sectionRef)
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-void py-28 sm:py-36">
-      <div className="mx-auto max-w-5xl px-6">
-        <span className="eyebrow eyebrow-line">{t('Why Authentic Dev')}</span>
+    <section ref={sectionRef} className="relative w-full overflow-hidden py-32 sm:py-44">
+      <div
+        aria-hidden
+        data-parallax="0.35"
+        className="pointer-events-none absolute -left-40 top-10 h-[420px] w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(181,139,255,0.35),transparent)]"
+      />
+      <div
+        aria-hidden
+        data-parallax="-0.3"
+        className="pointer-events-none absolute -right-32 bottom-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(closest-side,rgba(34,190,250,0.32),transparent)]"
+      />
 
-        <h2 className="mt-6 font-display text-[8.5vw] sm:text-[6vw] md:text-5xl lg:text-6xl font-black uppercase leading-[1.02] tracking-tight text-bone">
-          <span className="block overflow-hidden"><span className="why-line block text-bone/35">{t('Built For')}</span></span>
-          <span className="block overflow-hidden"><span className="why-line block">{t('Real Businesses.')}</span></span>
-          <span className="block overflow-hidden"><span className="why-line block text-bone/35">{t('Designed For')}</span></span>
-          <span className="block overflow-hidden"><span className="why-line block text-red">{t('The Digital World.')}</span></span>
-        </h2>
+      <div className="relative mx-auto max-w-5xl px-6">
+        <span data-reveal="fade" className="eyebrow eyebrow-line">
+          {t('Why Authentic Dev')}
+        </span>
 
-        <p className="why-fade mt-9 max-w-xl text-balance text-base sm:text-lg text-bone/60 leading-relaxed">
-          {t('We combine modern technology, thoughtful design and practical business thinking to build digital products that people actually use.')}
+        <ScrubText
+          as="h2"
+          from={0.12}
+          className="mt-8 font-display text-[9vw] font-semibold leading-[1.06] tracking-[-0.045em] text-bone sm:text-[6.4vw] md:text-6xl lg:text-7xl"
+          segments={[
+            { text: t('Built For'), className: 'text-bone/60' },
+            { text: t('Real Businesses.') },
+            { text: t('Designed For'), className: 'text-bone/60' },
+            { text: t('The Digital World.'), className: 'gradient-text' },
+          ]}
+        />
+
+        <p data-reveal="up" className="mt-10 max-w-xl text-balance text-base leading-relaxed text-bone/60 sm:text-lg">
+          {t(
+            'We combine modern technology, thoughtful design and practical business thinking to build digital products that people actually use.',
+          )}
         </p>
       </div>
     </section>

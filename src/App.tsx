@@ -6,6 +6,8 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
 import Preloader from './components/Preloader'
+import Backdrop from './components/Backdrop'
+import ScrollProgress from './components/ScrollProgress'
 import Hero from './sections/Hero'
 import CodeToGrowth from './sections/CodeToGrowth'
 import About from './sections/About'
@@ -32,8 +34,9 @@ function App() {
   return (
     <>
       <Preloader />
+      <Backdrop />
+      <ScrollProgress />
       <CustomCursor />
-      <div className="noise-overlay" />
       <Navbar />
       <main className="relative">
         <Hero />

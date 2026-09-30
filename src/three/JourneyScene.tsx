@@ -1,11 +1,11 @@
 import { Suspense, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Lightformer, Grid } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { Grid, ContactShadows } from '@react-three/drei'
 import * as THREE from 'three'
 import LogoModel from './LogoModel'
 import LaptopModel from './LaptopModel'
 import StreakParticles from './StreakParticles'
+import { StudioLights } from './Studio'
 import { useInView } from '../hooks/useInView'
 
 function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
@@ -37,8 +37,8 @@ function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<numbe
       const lift = sm(p, 0.54, 0.66) - sm(p, 0.68, 0.74)
       const fan = sm(p, 0.8, 0.88) - sm(p, 0.9, 0.95)
       targetZ = 7.4 + Math.sin(orbitT * 0.25) * 0.2 + lift * 0.9 + fan * 1.6
-      targetY = 1.5 + Math.sin(orbitT * 0.18) * 0.06 + lift * 0.15
-      lookY = 1.45
+      targetY = 2.15 + Math.sin(orbitT * 0.18) * 0.06 + lift * 0.1
+      lookY = 1.25
     } else {
       const t = sm(p, 0.9, 1)
       targetZ = THREE.MathUtils.lerp(9, 7.5, t)
@@ -76,16 +76,6 @@ function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<numbe
   )
 }
 
-function StudioLights() {
-  return (
-    <Environment resolution={256}>
-      <Lightformer intensity={1.3} rotation-x={Math.PI / 2} position={[0, 6, -2]} scale={[8, 8, 1]} color="#ffffff" />
-      <Lightformer intensity={0.7} position={[-6, 2, 3]} scale={[6, 3, 1]} color="#ffffff" />
-      <Lightformer intensity={1} position={[5, 1, 4]} scale={[4, 4, 1]} color="#ff5b5f" />
-    </Environment>
-  )
-}
-
 // A portrait phone viewport has a much narrower horizontal FOV than a landscape
 // one at the same vertical fov, which crops the laptop/logo tight. Widen the
 // fov and add a touch of base distance on very narrow/tall viewports.
@@ -120,48 +110,38 @@ export default function JourneyScene({
       dpr={isTouch ? [1, 1.25] : [1, 1.4]}
       shadows={!isTouch}
       camera={{ position: [0, 1.1, 9], fov: 36 }}
-      gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+      gl={{ antialias: !isTouch, alpha: true, powerPreference: 'high-performance' }}
       className="!absolute inset-0"
     >
-      <color attach="background" args={['#08090B']} />
-      <fog attach="fog" args={['#08090B', 9, 19]} />
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[3, 6, 5]} intensity={0.75} />
-      <pointLight position={[-3, 0.5, 2]} intensity={5} color="#D71920" distance={9} decay={2} />
+      <fog attach="fog" args={['#eef1fb', 11, 26]} />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[3, 6, 5]} intensity={1.1} />
+      <pointLight position={[-3, 0.5, 2]} intensity={4} color="#6f63ff" distance={9} decay={2} />
 
       <Suspense fallback={null}>
         <StudioLights />
         <JourneyRig progressRef={progressRef} />
         <LaptopModel progressRef={progressRef} position={[-0.3, 1.2, 0]} />
-        <StreakParticles count={isTouch ? 18 : 30} color="#D71920" spread={[22, 12, 14]} />
-        <StreakParticles count={isTouch ? 12 : 20} color="#ffffff" spread={[20, 10, 12]} speed={4} />
+        <StreakParticles count={isTouch ? 14 : 24} color="#5b4cff" spread={[22, 12, 14]} opacity={0.28} />
+        <StreakParticles count={isTouch ? 10 : 18} color="#17b3f2" spread={[20, 10, 12]} speed={4} opacity={0.32} />
         <Grid
           position={[0, -2.35, 0]}
           args={[40, 40]}
           cellSize={0.6}
           cellThickness={0.5}
-          cellColor="#3a1418"
+          cellColor="#cdd4f0"
           sectionSize={3}
           sectionThickness={1}
-          sectionColor="#D71920"
+          sectionColor="#9d94ff"
           fadeDistance={18}
           fadeStrength={1.5}
           infiniteGrid
         />
+        {!isTouch && <ContactShadows position={[0, -2.3, 0]} opacity={0.3} scale={14} blur={2.8} far={4} color="#3a2fb8" />}
       </Suspense>
 
       <ResponsiveCamera />
 
-      <EffectComposer multisampling={0}>
-        <Bloom
-          intensity={isTouch ? 0.2 : 0.3}
-          luminanceThreshold={0.8}
-          luminanceSmoothing={0.2}
-          mipmapBlur
-          radius={0.5}
-        />
-        <Vignette eskil={false} offset={0.15} darkness={0.7} />
-      </EffectComposer>
     </Canvas>
     </div>
   )

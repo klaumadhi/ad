@@ -8,6 +8,7 @@ type StreakParticlesProps = {
   color?: string
   speed?: number
   length?: number
+  opacity?: number
 }
 
 /**
@@ -17,9 +18,10 @@ type StreakParticlesProps = {
 export default function StreakParticles({
   count = 40,
   spread = [24, 14, 16],
-  color = '#D71920',
+  color = '#5b4cff',
   speed = 6,
   length = 1.6,
+  opacity = 0.55,
 }: StreakParticlesProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null)
   const dummy = useMemo(() => new THREE.Object3D(), [])
@@ -57,7 +59,7 @@ export default function StreakParticles({
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial color={color} transparent opacity={0.55} toneMapped={false} />
+      <meshBasicMaterial color={color} transparent opacity={opacity} toneMapped={false} />
     </instancedMesh>
   )
 }

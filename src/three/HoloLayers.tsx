@@ -52,7 +52,7 @@ export default function HoloLayers({ progressRef }: { progressRef: React.Mutable
             opacity={0}
             toneMapped={false}
             side={THREE.DoubleSide}
-            blending={THREE.AdditiveBlending}
+            blending={THREE.NormalBlending}
             depthWrite={false}
           />
         </mesh>

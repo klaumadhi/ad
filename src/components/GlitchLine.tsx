@@ -10,9 +10,9 @@ type GlitchLineProps = {
 }
 
 /**
- * A text line that stutters through a brief red/cyan channel-split glitch
- * before settling into its clean slide-up reveal — echoes the scan-line
- * glitch reveals from the reference footage.
+ * A headline line that glides up out of a mask with a slight tilt settling flat. (Name kept from
+ * the earlier glitch effect so callers are unchanged.) Hero lines wait for the preloader hand-off;
+ * lines with a `trigger` play when that element scrolls into view.
  */
 export default function GlitchLine({ children, className = '', trigger, delay = 0 }: GlitchLineProps) {
   const wrapRef = useRef<HTMLSpanElement>(null)
@@ -20,10 +20,6 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
   useEffect(() => {
     const el = wrapRef.current
     if (!el) return
-    const main = el.querySelector('.glitch-main')
-    const red = el.querySelector('.glitch-red')
-    const cyan = el.querySelector('.glitch-cyan')
-    if (!main || !red || !cyan) return
 
     let offIntro: () => void = () => {}
     const ctx = gsap.context(() => {
@@ -36,25 +32,9 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
         offIntro = onIntro(() => tl.play())
       }
 
-      // yPercent alone can still leak a sliver of a tall glyph (e.g. the diaeresis on
-      // "ë") past the clip while hidden, since diacritics overshoot the line box —
-      // opacity:0 belts it so nothing is visible before the reveal plays.
-      gsap.set(el, { yPercent: 100, opacity: 0 })
-      tl.set(el, { yPercent: 100, opacity: 0 })
-        .set([red, cyan], { opacity: 0 })
-        .to(el, { yPercent: 0, opacity: 1, duration: 0.01 })
-        .to(el, { yPercent: 0, opacity: 1, duration: 0.62, ease: 'power4.out' }, 0)
-        .to(
-          red,
-          { opacity: 0.75, x: -6, duration: 0.05, repeat: 4, yoyo: true, ease: 'none' },
-          0.05,
-        )
-        .to(
-          cyan,
-          { opacity: 0.6, x: 6, duration: 0.05, repeat: 4, yoyo: true, ease: 'none' },
-          0.07,
-        )
-        .to([red, cyan], { opacity: 0, x: 0, duration: 0.12, ease: 'power2.out' }, 0.4)
+      // Hidden with opacity as well as offset so tall accents (e.g. the dots on "Ë") can't peek out.
+      gsap.set(el, { yPercent: 112, opacity: 0, rotate: 3, transformOrigin: '0% 100%' })
+      tl.to(el, { yPercent: 0, opacity: 1, rotate: 0, duration: 1.15, ease: 'power4.out' })
     }, wrapRef)
 
     return () => {
@@ -64,15 +44,9 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
   }, [trigger, delay])
 
   return (
-    <span className="block overflow-hidden">
-      <span ref={wrapRef} className={`relative block ${className}`}>
-        <span className="glitch-main relative block">{children}</span>
-        <span className="glitch-red pointer-events-none absolute inset-0 block text-red mix-blend-screen" aria-hidden>
-          {children}
-        </span>
-        <span className="glitch-cyan pointer-events-none absolute inset-0 block text-[#4dd0e1] mix-blend-screen" aria-hidden>
-          {children}
-        </span>
+    <span className="block overflow-hidden pb-[0.16em] -mb-[0.16em]">
+      <span ref={wrapRef} className={`block ${className}`}>
+        {children}
       </span>
     </span>
   )

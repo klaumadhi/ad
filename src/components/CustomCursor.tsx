@@ -63,21 +63,23 @@ export default function CustomCursor() {
       <div ref={dotRef} className="cursor-dot" />
       <div
         ref={ringRef}
-        className="cursor-ring transition-[width,height,border-color,background-color] duration-300 ease-out"
+        className="cursor-ring"
         style={
           active
             ? {
-                width: label ? '96px' : '64px',
-                height: label ? '96px' : '64px',
-                borderColor: '#D71920',
-                background: 'rgba(215,25,32,0.12)',
+                width: label ? '92px' : '60px',
+                height: label ? '92px' : '60px',
+                borderColor: 'transparent',
+                background: 'rgba(255,255,255,0.72)',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 12px 34px -10px rgba(70,60,200,0.55)',
               }
             : undefined
         }
       >
         <span
           className="uppercase transition-opacity duration-200"
-          style={{ opacity: label ? 1 : 0, fontSize: '0.6rem', letterSpacing: '0.08em' }}
+          style={{ opacity: label ? 1 : 0, fontSize: '0.6rem', letterSpacing: '0.1em' }}
         >
           {label}
         </span>

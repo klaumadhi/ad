@@ -51,7 +51,7 @@ export default function ProjectCaseStudy({ project, onClose }: { project: Projec
             <button
               data-cursor="Close"
               onClick={onClose}
-              className="fixed right-6 top-6 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-bone hover:border-red hover:text-red transition-colors"
+              className="fixed right-6 top-6 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-bone/15 text-bone hover:border-accent hover:text-accent transition-colors"
               aria-label="Close case study"
             >
               ✕
@@ -63,10 +63,10 @@ export default function ProjectCaseStudy({ project, onClose }: { project: Projec
               transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             >
               <span className="eyebrow eyebrow-line">{project.industry}</span>
-              <h3 className="mt-5 font-display text-5xl sm:text-6xl md:text-7xl font-black uppercase leading-[0.92] tracking-tight text-bone">
+              <h3 className="mt-5 font-display text-5xl sm:text-6xl md:text-7xl font-semibold leading-[0.92] tracking-tight text-bone">
                 {project.name}
               </h3>
-              <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-red">{project.type}</p>
+              <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-accent">{project.type}</p>
 
               <ProjectVisual project={project} className="mt-10 aspect-[16/9] w-full" />
 
@@ -95,7 +95,7 @@ export default function ProjectCaseStudy({ project, onClose }: { project: Projec
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.4, delay: 0.6 + i * 0.05 }}
-                      className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wider text-bone/50"
+                      className="rounded-full border border-bone/10 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wider text-bone/50"
                     >
                       {t}
                     </motion.span>

@@ -16,6 +16,7 @@ export const sq: Record<string, string> = {
 
   // Preloader / hero
   Loading: "Duke u ngarkuar",
+  "Albanian web studio": "Studio shqiptare web",
   "We Build": "Nga Ide, ",
   Digital: "në",
   "hero|Experiences.": "Realitet.",

@@ -1,9 +1,9 @@
 import { Suspense, useRef, useState } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Lightformer, ContactShadows, Grid } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { ContactShadows, Grid } from '@react-three/drei'
 import * as THREE from 'three'
 import LogoModel from './LogoModel'
+import { StudioLights } from './Studio'
 import StreakParticles from './StreakParticles'
 import { heroIntro } from '../lib/intro'
 import { useInView } from '../hooks/useInView'
@@ -38,15 +38,10 @@ function ReadySignal({ onReady }: { onReady: () => void }) {
   return null
 }
 
-function StudioLights() {
-  return (
-    <Environment resolution={256}>
-      <Lightformer intensity={1.4} rotation-x={Math.PI / 2} position={[0, 6, -2]} scale={[8, 8, 1]} color="#ffffff" />
-      <Lightformer intensity={0.7} position={[-6, 2, 3]} scale={[6, 3, 1]} color="#ffffff" />
-      <Lightformer intensity={1} position={[5, 1, 4]} scale={[4, 4, 1]} color="#ff5b5f" />
-      <Lightformer intensity={0.5} position={[0, -3, 4]} scale={[10, 2, 1]} color="#8892a6" />
-    </Environment>
-  )
+// In portrait the camera is pulled back and the copy stack is taller, so lift the mark to keep it above the headline.
+function HeroLogo({ scrollRotation, isTouch }: { scrollRotation: React.MutableRefObject<number>; isTouch: boolean }) {
+  const aspect = useThree((s) => s.size.width / s.size.height)
+  return <LogoModel scrollRotation={scrollRotation} scale={1} position={[0, aspect < 0.75 ? 2.35 : 1.55, 0]} interactive={!isTouch} />
 }
 
 function SweepLight() {
@@ -58,7 +53,7 @@ function SweepLight() {
       ref.current.position.y = 1.55 + Math.cos(t * 0.35) * 0.5
     }
   })
-  return <pointLight ref={ref} position={[0, 1.55, 1.6]} intensity={4} color="#ffffff" distance={5} decay={2} />
+  return <pointLight ref={ref} position={[0, 1.55, 1.6]} intensity={3} color="#ffffff" distance={5} decay={2} />
 }
 
 // A portrait phone viewport has a much narrower horizontal FOV than a landscape
@@ -87,60 +82,48 @@ export default function HeroScene({ isTouch = false }: { isTouch?: boolean }) {
 
   return (
     <div ref={wrapRef} className="absolute inset-0">
-    <Canvas
-      frameloop={inView ? 'always' : 'never'}
-      dpr={isTouch ? [1, 1.25] : [1, 1.5]}
-      shadows={!isTouch}
-      camera={{ position: [0, 1.1, 9], fov: 36 }}
-      gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
-      className="!absolute inset-0"
-      style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.9s ease' }}
-    >
-      <color attach="background" args={['#08090B']} />
-      <fog attach="fog" args={['#08090B', 9, 17]} />
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[3, 6, 5]} intensity={0.8} castShadow={!isTouch} shadow-mapSize={[1024, 1024]} />
-      <pointLight position={[-3, 0.5, 2]} intensity={6} color="#D71920" distance={8} decay={2} />
+      <Canvas
+        frameloop={inView ? 'always' : 'never'}
+        dpr={isTouch ? [1, 1.25] : [1, 1.5]}
+        shadows={!isTouch}
+        camera={{ position: [0, 1.1, 9], fov: 36 }}
+        gl={{ antialias: !isTouch, alpha: true, powerPreference: 'high-performance' }}
+        className="!absolute inset-0"
+        style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.9s ease' }}
+      >
+        <fog attach="fog" args={['#eef1fb', 10, 24]} />
+        <ambientLight intensity={0.55} />
+        <directionalLight position={[3, 6, 5]} intensity={1.1} castShadow={!isTouch} shadow-mapSize={[1024, 1024]} />
+        <pointLight position={[-3, 0.5, 2]} intensity={4} color="#6f63ff" distance={8} decay={2} />
 
-      <Suspense fallback={null}>
-        <StudioLights />
-        <ReadySignal onReady={() => setReady(true)} />
-        <SweepLight />
-        <LogoModel scrollRotation={scrollRotation} scale={1} position={[0, 1.55, 0]} interactive={!isTouch} />
-        <StreakParticles count={isTouch ? 20 : 36} color="#D71920" spread={[22, 12, 14]} />
-        <StreakParticles count={isTouch ? 14 : 24} color="#ffffff" spread={[20, 10, 12]} speed={4} />
-        <Grid
-          position={[0, -2.35, 0]}
-          args={[40, 40]}
-          cellSize={0.6}
-          cellThickness={0.5}
-          cellColor="#3a1418"
-          sectionSize={3}
-          sectionThickness={1}
-          sectionColor="#D71920"
-          fadeDistance={16}
-          fadeStrength={1.5}
-          infiniteGrid
-        />
-        {!isTouch && (
-          <ContactShadows position={[0, -2.3, 0]} opacity={0.55} scale={14} blur={2.4} far={4} color="#000000" />
-        )}
-      </Suspense>
+        <Suspense fallback={null}>
+          <StudioLights />
+          <ReadySignal onReady={() => setReady(true)} />
+          <SweepLight />
+          <HeroLogo scrollRotation={scrollRotation} isTouch={isTouch} />
+          <StreakParticles count={isTouch ? 16 : 30} color="#5b4cff" spread={[22, 12, 14]} opacity={0.3} />
+          <StreakParticles count={isTouch ? 12 : 22} color="#17b3f2" spread={[20, 10, 12]} speed={4} opacity={0.35} />
+          <Grid
+            position={[0, -2.35, 0]}
+            args={[40, 40]}
+            cellSize={0.6}
+            cellThickness={0.6}
+            cellColor="#cdd4f0"
+            sectionSize={3}
+            sectionThickness={1.1}
+            sectionColor="#9d94ff"
+            fadeDistance={17}
+            fadeStrength={1.6}
+            infiniteGrid
+          />
+          {!isTouch && (
+            <ContactShadows position={[0, -2.3, 0]} opacity={0.35} scale={14} blur={2.8} far={4} color="#3a2fb8" />
+          )}
+        </Suspense>
 
-      <Rig isTouch={isTouch} />
-      <ResponsiveCamera />
-
-      <EffectComposer multisampling={0}>
-        <Bloom
-          intensity={isTouch ? 0.22 : 0.3}
-          luminanceThreshold={0.8}
-          luminanceSmoothing={0.2}
-          mipmapBlur
-          radius={0.5}
-        />
-        <Vignette eskil={false} offset={0.15} darkness={0.7} />
-      </EffectComposer>
-    </Canvas>
+        <Rig isTouch={isTouch} />
+        <ResponsiveCamera />
+      </Canvas>
     </div>
   )
 }
