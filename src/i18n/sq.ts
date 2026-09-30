@@ -246,8 +246,8 @@ export const sq: Record<string, string> = {
   // Albanian identity
   "Albanian Identity": "Identiteti Shqiptar",
   Heritage: "Trashëgimi",
-  "The double-headed eagle at the center of our identity is a quiet nod to where we build from — carried into every interface, system and line of code we ship.":
-    "Shqiponja dykrenare në zemër të identitetit tonë është një homazh i heshtur për vendin nga vijmë — e pranishme në çdo ndërfaqe, sistem dhe rresht kodi që ndërtojmë.",
+  "The eagle at the center of our identity is a quiet nod to where we build from — carried into every interface, system and line of code we ship.":
+    "Shqiponja në zemër të identitetit tonë është një homazh i heshtur për vendin nga vijmë — e pranishme në çdo ndërfaqe, sistem dhe rresht kodi që ndërtojmë.",
 
   // CTA
   "Your Next": "Projekti Yt",

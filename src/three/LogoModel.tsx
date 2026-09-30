@@ -4,14 +4,25 @@ import * as THREE from 'three'
 import { SVGLoader, type SVGResult } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
-const ART_W = 1064
-const ART_H = 635
+// The logo artwork is 1054 × 738 px. Columns left of XCUT are the pixel cloud, the rest is the eagle head.
+const ART_W = 1054
+const ART_H = 738
+const XCUT = 585
 const FRONT_Z = 22.8 // just proud of the extrusion's front face (depth 36 + bevel 4, centred)
 
+const EXTRUDE_SETTINGS = {
+  depth: 36,
+  bevelEnabled: true,
+  bevelThickness: 4,
+  bevelSize: 2.4,
+  bevelSegments: 4,
+  curveSegments: 14,
+}
+
 /**
- * Splits the real logo artwork into two transparent plates — the graphite letters and the red eagles
- * (with their eye highlights) — so each can sit on the front of its own extruded body and still fly
- * apart independently. This keeps every detail of the original mark on the 3D version.
+ * Splits the real logo artwork into two transparent plates — the pixel cloud and the eagle head — so
+ * each can sit on the front of its own extruded body and still fly apart independently. Every detail
+ * of the original mark is kept on the 3D version.
  */
 function useLogoPlates() {
   const art = useLoader(THREE.TextureLoader, '/images/logo-mark-transparent.png')
@@ -24,20 +35,19 @@ function useLogoPlates() {
     src.height = h
     const sctx = src.getContext('2d', { willReadFrequently: true })!
     sctx.drawImage(img, 0, 0)
-    const px = sctx.getImageData(0, 0, w, h).data
+    const base = sctx.getImageData(0, 0, w, h)
 
-    const make = (pick: (r: number, g: number, b: number) => number) => {
+    const make = (keep: (x: number) => boolean) => {
       const c = document.createElement('canvas')
       c.width = w
       c.height = h
       const ctx = c.getContext('2d')!
       const out = ctx.createImageData(w, h)
-      for (let i = 0; i < px.length; i += 4) {
-        const k = pick(px[i], px[i + 1], px[i + 2])
-        out.data[i] = px[i]
-        out.data[i + 1] = px[i + 1]
-        out.data[i + 2] = px[i + 2]
-        out.data[i + 3] = px[i + 3] * k
+      out.data.set(base.data)
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          if (!keep(x)) out.data[(y * w + x) * 4 + 3] = 0
+        }
       }
       ctx.putImageData(out, 0, 0)
       const t = new THREE.CanvasTexture(c)
@@ -46,25 +56,8 @@ function useLogoPlates() {
       t.needsUpdate = true
       return t
     }
-    const clamp01 = (v: number) => Math.max(0, Math.min(1, v))
-    // Red eagle body plus the near-white eye highlights belong to the red plate.
-    const redness = (r: number, g: number, b: number) =>
-      Math.max(clamp01((r - Math.max(g, b) - 30) / 50), clamp01((Math.min(r, g, b) - 190) / 40))
-
-    return {
-      dark: make((r, g, b) => 1 - redness(r, g, b)),
-      red: make((r, g, b) => redness(r, g, b)),
-    }
+    return { pixels: make((x) => x < XCUT), head: make((x) => x >= XCUT) }
   }, [art])
-}
-
-const EXTRUDE_SETTINGS = {
-  depth: 36,
-  bevelEnabled: true,
-  bevelThickness: 4,
-  bevelSize: 2.4,
-  bevelSegments: 4,
-  curveSegments: 14,
 }
 
 function svgToGeometry(data: SVGResult) {
@@ -72,8 +65,7 @@ function svgToGeometry(data: SVGResult) {
   data.paths.forEach((path) => {
     const shapes = SVGLoader.createShapes(path)
     shapes.forEach((shape) => {
-      const geo = new THREE.ExtrudeGeometry(shape, EXTRUDE_SETTINGS)
-      geometries.push(geo)
+      geometries.push(new THREE.ExtrudeGeometry(shape, EXTRUDE_SETTINGS))
     })
   })
   const merged = mergeGeometries(geometries, false)
@@ -87,7 +79,7 @@ type LogoModelProps = {
   interactive?: boolean
   scale?: number
   position?: [number, number, number]
-  /** 0 = assembled logo, 1 = fully separated into its two constituent pieces. */
+  /** 0 = assembled logo, 1 = pixel cloud and eagle head fully separated. */
   explodeRef?: React.MutableRefObject<number>
 }
 
@@ -98,41 +90,34 @@ export default function LogoModel({
   position = [0, 0, 0],
   explodeRef,
 }: LogoModelProps) {
-  const [darkSvg, redSvg] = useLoader(SVGLoader, ['/images/logo-dark.svg', '/images/logo-red.svg'])
+  const [pixelsSvg, headSvg] = useLoader(SVGLoader, ['/images/logo-pixels.svg', '/images/logo-head.svg'])
   const plates = useLogoPlates()
 
-  const darkGeo = useMemo(() => {
-    const g = svgToGeometry(darkSvg)
-    g.center()
-    return g
-  }, [darkSvg])
-
-  // Red is recentred on its own centroid so it can spin/lift around itself when exploding.
-  const red = useMemo(() => {
-    const g = svgToGeometry(redSvg)
-    g.computeBoundingBox()
-    const c = g.boundingBox!.getCenter(new THREE.Vector3())
-    g.translate(-c.x, -c.y, -c.z)
-    return { geo: g, center: c }
-  }, [redSvg])
-
-  // Same frame offset as the (centred) dark geometry.
-  const offset = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(new THREE.Mesh(svgToGeometry(darkSvg)))
-    return box.getCenter(new THREE.Vector3())
-  }, [darkSvg])
-
-  // Where the artwork's centre lands inside each body's own frame (svg y is flipped in 3D).
-  const darkPlate = useMemo(() => new THREE.Vector3(ART_W / 2 - offset.x, -ART_H / 2 - offset.y, FRONT_Z), [offset])
-  const redPlate = useMemo(() => new THREE.Vector3(ART_W / 2 - red.center.x, -ART_H / 2 - red.center.y, FRONT_Z), [red])
-
-  const darkEdges = useMemo(() => new THREE.EdgesGeometry(darkGeo, 28), [darkGeo])
-  const redEdges = useMemo(() => new THREE.EdgesGeometry(red.geo, 28), [red])
-  const redBase = useMemo(() => red.center.clone().sub(offset).add(new THREE.Vector3(0, 0, 8)), [red, offset])
+  // Each body is centred on its own bounding box so it can spin/lift about itself; `pos` restores
+  // its place inside the assembled logo.
+  const parts = useMemo(() => {
+    const build = (svg: SVGResult) => {
+      const geo = svgToGeometry(svg)
+      geo.computeBoundingBox()
+      const box = geo.boundingBox!.clone()
+      const c = box.getCenter(new THREE.Vector3())
+      geo.translate(-c.x, -c.y, -c.z)
+      return { geo, c, box }
+    }
+    const pix = build(pixelsSvg)
+    const head = build(headSvg)
+    const union = pix.box.clone().union(head.box)
+    const cU = union.getCenter(new THREE.Vector3())
+    const plate = (c: THREE.Vector3) => new THREE.Vector3(ART_W / 2 - c.x, -ART_H / 2 - c.y, FRONT_Z)
+    return {
+      pix: { geo: pix.geo, pos: pix.c.clone().sub(cU), plate: plate(pix.c), edges: new THREE.EdgesGeometry(pix.geo, 28) },
+      head: { geo: head.geo, pos: head.c.clone().sub(cU), plate: plate(head.c), edges: new THREE.EdgesGeometry(head.geo, 28) },
+    }
+  }, [pixelsSvg, headSvg])
 
   const group = useRef<THREE.Group>(null)
-  const darkMesh = useRef<THREE.Group>(null)
-  const redMesh = useRef<THREE.Group>(null)
+  const pixGroup = useRef<THREE.Group>(null)
+  const headGroup = useRef<THREE.Group>(null)
   const ghost = useRef<THREE.Group>(null)
   const ring1 = useRef<THREE.Mesh>(null)
   const ring2 = useRef<THREE.Mesh>(null)
@@ -153,21 +138,21 @@ export default function LogoModel({
 
     const e = explodeRef?.current ?? 0
     const k = e * e * (3 - 2 * e)
-    // Futuristic split: the eagles lift out, spin a full turn about their own axis and
-    // hover in front while the AD block recedes and tilts back; a blueprint ghost of the
-    // assembled mark and two scanner rings hold the original silhouette in place.
-    if (darkMesh.current) {
-      darkMesh.current.position.set(-k * 90, -k * 30, -k * 260)
-      darkMesh.current.rotation.set(k * 0.12, -k * 0.55, 0)
-      darkMesh.current.scale.setScalar(1 - k * 0.06)
+    // Futuristic split: the pixel cloud recedes and drifts apart while the eagle head lifts out,
+    // spins a full turn and hovers in front; a blueprint ghost of the assembled mark and two
+    // scanner rings hold the original silhouette in place.
+    if (pixGroup.current) {
+      pixGroup.current.position.set(parts.pix.pos.x - k * 230, parts.pix.pos.y + k * 30, parts.pix.pos.z - k * 260)
+      pixGroup.current.rotation.set(k * 0.14, -k * 0.5, 0)
+      pixGroup.current.scale.setScalar(1 - k * 0.06)
     }
-    if (redMesh.current) {
-      redMesh.current.position.set(redBase.x + k * 180, redBase.y + k * 170, redBase.z + k * 380)
-      redMesh.current.rotation.set(Math.sin(k * Math.PI) * 0.5, k * Math.PI * 2, k * 0.25)
-      redMesh.current.scale.setScalar(1 + k * 0.18)
+    if (headGroup.current) {
+      headGroup.current.position.set(parts.head.pos.x + k * 170, parts.head.pos.y + k * 150, parts.head.pos.z + k * 380)
+      headGroup.current.rotation.set(Math.sin(k * Math.PI) * 0.4, k * Math.PI * 2, k * 0.2)
+      headGroup.current.scale.setScalar(1 + k * 0.16)
     }
     const flicker = 0.75 + Math.sin(t * 38) * 0.12 + Math.sin(t * 13) * 0.08
-    if (ghostMat.current) ghostMat.current.opacity = Math.min(1, k * 1.6) * 0.55 * flicker
+    if (ghostMat.current) ghostMat.current.opacity = Math.min(1, k * 1.6) * 0.5 * flicker
     if (ghostMat2.current) ghostMat2.current.opacity = Math.min(1, k * 1.6) * 0.5 * flicker
     if (ghost.current) ghost.current.visible = k > 0.01
     const ringOn = k > 0.01
@@ -185,76 +170,65 @@ export default function LogoModel({
     }
   })
 
-  const normScale = (scale * 1.4688) / 1064
+  const normScale = (scale * 1.45) / ART_W
+
+  const plateMat = (map: THREE.Texture) => (
+    // Self-lit so the artwork's colours stay exact; the clear coat adds the glossy reflections.
+    <meshPhysicalMaterial
+      map={map}
+      emissiveMap={map}
+      emissive="#ffffff"
+      emissiveIntensity={1}
+      color="#000000"
+      transparent
+      depthWrite={false}
+      toneMapped={false}
+      roughness={1}
+      specularIntensity={0}
+      metalness={0}
+      clearcoat={0.28}
+      clearcoatRoughness={0.1}
+      envMapIntensity={0.25}
+    />
+  )
 
   return (
     <group ref={group} scale={normScale} position={position}>
-      <group ref={darkMesh}>
-        <mesh geometry={darkGeo} castShadow receiveShadow>
-          <meshStandardMaterial color="#1a2160" metalness={0.85} roughness={0.3} envMapIntensity={1.2} />
+      <group ref={pixGroup} position={parts.pix.pos}>
+        <mesh geometry={parts.pix.geo} castShadow receiveShadow>
+          <meshStandardMaterial color="#343aa6" metalness={0.5} roughness={0.4} envMapIntensity={1} />
         </mesh>
-        <mesh position={darkPlate} renderOrder={2}>
+        <mesh position={parts.pix.plate} renderOrder={2}>
           <planeGeometry args={[ART_W, ART_H]} />
-          {/* Self-lit so the brand colours stay exact; the clear coat adds the glossy reflections. */}
-          <meshPhysicalMaterial
-            map={plates.dark}
-            emissiveMap={plates.dark}
-            emissive="#ffffff"
-            emissiveIntensity={1}
-            color="#000000"
-            transparent
-            depthWrite={false}
-            toneMapped={false}
-            roughness={1}
-            specularIntensity={0}
-            metalness={0}
-            clearcoat={0.28}
-            clearcoatRoughness={0.1}
-            envMapIntensity={0.25}
-          />
+          {plateMat(plates.pixels)}
         </mesh>
       </group>
-      <group ref={redMesh} position={[redBase.x, redBase.y, redBase.z]}>
-        <mesh geometry={red.geo} castShadow receiveShadow>
-          <meshStandardMaterial color="#9b1c24" metalness={0.35} roughness={0.4} emissive="#3a0508" emissiveIntensity={0.3} envMapIntensity={1} />
+
+      <group ref={headGroup} position={parts.head.pos}>
+        <mesh geometry={parts.head.geo} castShadow receiveShadow>
+          <meshStandardMaterial color="#141d4a" metalness={0.6} roughness={0.35} envMapIntensity={1.1} />
         </mesh>
-        <mesh position={redPlate} renderOrder={3}>
+        <mesh position={parts.head.plate} renderOrder={3}>
           <planeGeometry args={[ART_W, ART_H]} />
-          {/* Self-lit so the brand colours stay exact; the clear coat adds the glossy reflections. */}
-          <meshPhysicalMaterial
-            map={plates.red}
-            emissiveMap={plates.red}
-            emissive="#ffffff"
-            emissiveIntensity={1}
-            color="#000000"
-            transparent
-            depthWrite={false}
-            toneMapped={false}
-            roughness={1}
-            specularIntensity={0}
-            metalness={0}
-            clearcoat={0.28}
-            clearcoatRoughness={0.1}
-            envMapIntensity={0.25}
-          />
+          {plateMat(plates.head)}
         </mesh>
       </group>
 
       <group ref={ghost} visible={false}>
-        <lineSegments geometry={darkEdges}>
-          <lineBasicMaterial ref={ghostMat} color="#5b4cff" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
+        <lineSegments geometry={parts.pix.edges} position={parts.pix.pos}>
+          <lineBasicMaterial ref={ghostMat} color="#5b4cff" transparent opacity={0} toneMapped={false} depthWrite={false} />
         </lineSegments>
-        <lineSegments geometry={redEdges} position={[redBase.x, redBase.y, redBase.z]}>
-          <lineBasicMaterial ref={ghostMat2} color="#17b3f2" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
+        <lineSegments geometry={parts.head.edges} position={parts.head.pos}>
+          <lineBasicMaterial ref={ghostMat2} color="#17b3f2" transparent opacity={0} toneMapped={false} depthWrite={false} />
         </lineSegments>
       </group>
       <mesh ref={ring1} visible={false}>
         <torusGeometry args={[600, 3, 8, 96]} />
-        <meshBasicMaterial color="#5b4cff" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
+        <meshBasicMaterial color="#5b4cff" transparent opacity={0} toneMapped={false} depthWrite={false} />
       </mesh>
       <mesh ref={ring2} visible={false}>
         <torusGeometry args={[600, 2, 8, 96]} />
-        <meshBasicMaterial color="#17b3f2" transparent opacity={0} toneMapped={false} blending={THREE.NormalBlending} depthWrite={false} />
+        <meshBasicMaterial color="#17b3f2" transparent opacity={0} toneMapped={false} depthWrite={false} />
       </mesh>
     </group>
   )

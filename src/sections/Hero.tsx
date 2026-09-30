@@ -136,7 +136,7 @@ export default function Hero() {
           ref={logoWrapRef}
           className="mb-1 flex h-[150px] flex-col items-center justify-end sm:h-[180px] md:h-[200px]"
         >
-          <span className="sr-only">Authentic Dev — AD monogram with double-headed eagle</span>
+          <span className="sr-only">Authentic Dev — eagle mark dissolving into pixels</span>
         </div>
 
         <h1 className="font-display font-semibold leading-[1.02] tracking-[-0.045em] text-bone">

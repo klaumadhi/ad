@@ -26,8 +26,8 @@ export default function Preloader() {
     const tasks: Promise<unknown>[] = [
       import('../three/HeroScene'),
       document.fonts.ready,
-      fetch('/images/logo-dark.svg').catch(() => null),
-      fetch('/images/logo-red.svg').catch(() => null),
+      fetch('/images/logo-pixels.svg').catch(() => null),
+      fetch('/images/logo-head.svg').catch(() => null),
     ]
     if (!reduced) {
       tasks.push(

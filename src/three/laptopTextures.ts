@@ -311,14 +311,14 @@ export function makeWebsiteTexture() {
     rr(ctx, 64, 40, W - 128, 96, 48)
     ctx.fill()
     ctx.restore()
-    if (imgs.logo) ctx.drawImage(imgs.logo, 104, 58, 98, 60)
+    if (imgs.logo) ctx.drawImage(imgs.logo, 104, 58, 86, 60)
     ctx.textBaseline = 'middle'
     ctx.font = '600 32px Sora, Inter, sans-serif'
     ctx.fillStyle = INK
-    ctx.fillText('AUTHENTIC', 222, 90)
+    ctx.fillText('AUTHENTIC', 208, 90)
     const aw = ctx.measureText('AUTHENTIC ').width
     ctx.fillStyle = ACCENT
-    ctx.fillText('DEV', 222 + aw, 90)
+    ctx.fillText('DEV', 208 + aw, 90)
     ctx.font = '500 28px Inter, sans-serif'
     ctx.fillStyle = 'rgba(12,16,51,0.62)'
     ;['Work', 'Services', 'About', 'Process', 'Contact'].forEach((l, i) => ctx.fillText(l, 700 + i * 150, 90))

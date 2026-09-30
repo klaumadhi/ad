@@ -276,7 +276,7 @@ export default function LaptopModel({ progressRef, position = [0, 0, 0] }: Lapto
 
           {/* Back-of-lid emblem (visible while the lid is closed) */}
           <mesh position={[0, 0.655, -0.0232]} rotation={[0, Math.PI, 0]}>
-            <planeGeometry args={[0.48, 0.286]} />
+            <planeGeometry args={[0.46, 0.322]} />
             <meshPhysicalMaterial map={logoArt} transparent roughness={0.4} metalness={0.1} clearcoat={0.7} clearcoatRoughness={0.2} />
           </mesh>
 

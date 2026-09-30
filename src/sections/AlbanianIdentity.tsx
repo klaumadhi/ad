@@ -83,7 +83,7 @@ export default function AlbanianIdentity() {
             className="absolute inset-0 flex items-center justify-center"
             style={{ clipPath: 'inset(0 0 0 50%)' }}
           >
-            <Logo className="h-full" title="Authentic Dev double-headed eagle monogram" />
+            <Logo className="h-full" title="Authentic Dev eagle mark" />
           </div>
         </div>
 
@@ -93,7 +93,7 @@ export default function AlbanianIdentity() {
           </h2>
           <p className="mx-auto mt-6 max-w-lg text-sm leading-relaxed text-bone/60 sm:text-base">
             {t(
-              'The double-headed eagle at the center of our identity is a quiet nod to where we build from — carried into every interface, system and line of code we ship.',
+              'The eagle at the center of our identity is a quiet nod to where we build from — carried into every interface, system and line of code we ship.',
             )}
           </p>
         </div>
