@@ -33,7 +33,7 @@ export default function Contact() {
     <section id="contact" ref={sectionRef} className="relative w-full py-28 sm:py-36">
       <div className="mx-auto grid max-w-6xl gap-14 px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
         <div>
-          <span data-reveal="fade" className="eyebrow eyebrow-line">
+          <span data-reveal="fade" data-reveal-m="right" className="eyebrow eyebrow-line">
             {t('Get In Touch')}
           </span>
           <h2 className="contact-heading mt-6 font-display text-5xl font-semibold leading-[1.02] tracking-[-0.045em] text-bone sm:text-6xl md:text-7xl">
@@ -46,7 +46,7 @@ export default function Contact() {
             </GlitchLine>
           </h2>
 
-          <div data-stagger="up" className="mt-12 space-y-3">
+          <div data-stagger="up" data-stagger-m="alt" className="mt-12 space-y-3">
             {infoRows.map((row) => (
               <div key={row.label} className="glass flex flex-col gap-1 rounded-2xl px-5 py-4">
                 <span className="font-mono text-[0.62rem] font-medium uppercase tracking-[0.18em] text-bone/40">{t(row.label)}</span>
@@ -62,7 +62,7 @@ export default function Contact() {
           </div>
         </div>
 
-        <div data-reveal="rise">
+        <div data-reveal="rise" data-reveal-m="flip">
           {sent ? (
             <motion.div
               initial={{ opacity: 0, y: 16 }}

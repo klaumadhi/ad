@@ -23,7 +23,7 @@ export default function WhyUs() {
       />
 
       <div className="relative mx-auto max-w-5xl px-6">
-        <span data-reveal="fade" className="eyebrow eyebrow-line">
+        <span data-reveal="fade" data-reveal-m="right" className="eyebrow eyebrow-line">
           {t('Why Authentic Dev')}
         </span>
 
@@ -39,7 +39,7 @@ export default function WhyUs() {
           ]}
         />
 
-        <p data-reveal="up" className="mt-10 max-w-xl text-balance text-base leading-relaxed text-bone/60 sm:text-lg">
+        <p data-reveal="up" data-reveal-m="skew" className="mt-10 max-w-xl text-balance text-base leading-relaxed text-bone/60 sm:text-lg">
           {t(
             'We combine modern technology, thoughtful design and practical business thinking to build digital products that people actually use.',
           )}

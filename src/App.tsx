@@ -8,6 +8,7 @@ import CustomCursor from './components/CustomCursor'
 import Preloader from './components/Preloader'
 import Backdrop from './components/Backdrop'
 import ScrollProgress from './components/ScrollProgress'
+import ScrollOrb from './components/ScrollOrb'
 import Hero from './sections/Hero'
 import CodeToGrowth from './sections/CodeToGrowth'
 import About from './sections/About'
@@ -36,6 +37,7 @@ function App() {
       <Preloader />
       <Backdrop />
       <ScrollProgress />
+      <ScrollOrb />
       <CustomCursor />
       <Navbar />
       <main className="relative">

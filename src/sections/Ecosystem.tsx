@@ -33,7 +33,7 @@ export default function Ecosystem() {
             opacity: 1,
             duration: 0.8,
             ease: 'back.out(1.8)',
-            scrollTrigger: { trigger: el, start: 'top 80%' },
+            scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none reverse' },
           },
         )
         gsap.fromTo(
@@ -46,7 +46,7 @@ export default function Ecosystem() {
             duration: 0.6,
             stagger: 0.06,
             ease: 'back.out(1.6)',
-            scrollTrigger: { trigger: el, start: 'top 75%' },
+            scrollTrigger: { trigger: el, start: 'top 75%', toggleActions: 'play none none reverse' },
           },
         )
       }, mobileRef)
@@ -104,11 +104,12 @@ export default function Ecosystem() {
   return (
     <section ref={rootRef} className="relative w-full overflow-hidden py-28 sm:py-36">
       <div className="relative z-10 mx-auto max-w-6xl px-6 text-center">
-        <span data-reveal="fade" className="eyebrow eyebrow-line">
+        <span data-reveal="fade" data-reveal-m="zoom" className="eyebrow eyebrow-line">
           {t('What We Build')}
         </span>
         <h2
           data-reveal="blur"
+          data-reveal-m="skew"
           className="mx-auto mt-5 max-w-3xl font-display text-5xl font-semibold tracking-[-0.045em] text-bone sm:text-6xl md:text-7xl"
         >
           {t('A Digital Ecosystem')}

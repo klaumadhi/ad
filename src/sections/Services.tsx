@@ -54,19 +54,19 @@ export default function Services() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span data-reveal="fade" className="eyebrow eyebrow-line">
+            <span data-reveal="fade" data-reveal-m="left" className="eyebrow eyebrow-line">
               {t('What We Do')}
             </span>
-            <h2 data-reveal="blur" className="mt-5 font-display text-5xl font-semibold tracking-[-0.045em] text-bone sm:text-6xl md:text-7xl">
+            <h2 data-reveal="blur" data-reveal-m="left" className="mt-5 font-display text-5xl font-semibold tracking-[-0.045em] text-bone sm:text-6xl md:text-7xl">
               {t('Services')}
             </h2>
           </div>
-          <p data-reveal="up" data-delay="0.1" className="max-w-xs text-sm leading-relaxed text-bone/55">
+          <p data-reveal="up" data-reveal-m="right" data-delay="0.1" className="max-w-xs text-sm leading-relaxed text-bone/55">
             {t('Six disciplines, one studio — everything a business needs to operate confidently online.')}
           </p>
         </div>
 
-        <div data-stagger="rise" data-each="0.1" className="mt-14 grid gap-5 md:grid-cols-6">
+        <div data-stagger="rise" data-stagger-m="alt" data-each="0.1" className="mt-14 grid gap-5 md:grid-cols-6">
           {services.map((service, i) => (
             <Tilt key={service.index} className={`${SPANS[i]} rounded-[1.75rem]`} max={5}>
               <article

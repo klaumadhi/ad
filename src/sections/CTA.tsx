@@ -36,6 +36,7 @@ export default function CTA() {
     <section ref={sectionRef} className="relative w-full px-4 py-20 sm:px-6 sm:py-32">
       <div
         data-reveal="scale"
+        data-reveal-m="spin"
         className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-accent via-[#6a5cff] to-accent-2 px-6 py-20 text-center shadow-[0_50px_120px_-40px_rgba(70,60,200,0.7)] sm:rounded-[3rem] sm:py-28"
       >
         <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 animate-pulse rounded-full bg-white/25 blur-3xl" />

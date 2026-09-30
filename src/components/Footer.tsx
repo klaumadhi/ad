@@ -21,7 +21,9 @@ export default function Footer() {
         duration: 0.9,
         stagger: 0.08,
         ease: 'power3.out',
-        scrollTrigger: { trigger: footerRef.current, start: 'top 88%', once: true },
+        scrollTrigger: window.matchMedia('(max-width: 767px)').matches
+          ? { trigger: footerRef.current, start: 'top 92%', toggleActions: 'play none none reverse' }
+          : { trigger: footerRef.current, start: 'top 88%', once: true },
       })
       // The giant wordmark rises and drifts as the footer scrolls in.
       gsap.fromTo(

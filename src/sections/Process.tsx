@@ -37,13 +37,16 @@ export default function Process() {
           onEnter: () => node?.classList.add('is-on'),
           onLeaveBack: () => node?.classList.remove('is-on'),
         })
+        const mobile = window.matchMedia('(max-width: 767px)').matches
         gsap.from(card, {
           opacity: 0,
           x: i % 2 === 0 ? -60 : 60,
           y: 30,
           duration: 1,
           ease: 'power3.out',
-          scrollTrigger: { trigger: step, start: 'top 82%', once: true },
+          scrollTrigger: mobile
+            ? { trigger: step, start: 'top 85%', toggleActions: 'play none none reverse' }
+            : { trigger: step, start: 'top 82%', once: true },
         })
       })
     }, list)
@@ -54,10 +57,10 @@ export default function Process() {
     <section id="process" ref={sectionRef} className="relative w-full py-28 sm:py-36">
       <div className="mx-auto max-w-5xl px-6">
         <div className="text-center">
-          <span data-reveal="fade" className="eyebrow eyebrow-line">
+          <span data-reveal="fade" data-reveal-m="zoom" className="eyebrow eyebrow-line">
             {t('How We Work')}
           </span>
-          <h2 data-reveal="blur" className="mt-5 font-display text-5xl font-semibold tracking-[-0.045em] text-bone sm:text-6xl md:text-7xl">
+          <h2 data-reveal="blur" data-reveal-m="skew" className="mt-5 font-display text-5xl font-semibold tracking-[-0.045em] text-bone sm:text-6xl md:text-7xl">
             {t('The Process')}
           </h2>
           <p data-reveal="up" data-delay="0.1" className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-bone/55 sm:text-base">

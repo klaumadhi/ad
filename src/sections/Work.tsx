@@ -26,7 +26,7 @@ function FeaturedPanel({
       <div className="relative grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-center md:gap-14">
         <span
           aria-hidden
-          className="pointer-events-none absolute -left-2 -top-10 select-none font-display text-[9rem] font-semibold leading-none tracking-tighter text-accent/[0.08] sm:text-[13rem] md:-top-24"
+          className="pointer-events-none absolute -left-2 -top-10 select-none font-display text-[9rem] font-semibold leading-none tracking-tighter text-accent/[0.08] sm:text-[13rem] md:-top-6"
         >
           0{index + 1}
         </span>
@@ -65,7 +65,7 @@ function FeaturedPanel({
         <button
           data-cursor="Open"
           onClick={() => onOpen(project.id)}
-          className="relative order-1 aspect-[4/3] w-full transition-transform duration-700 hover:-rotate-1 hover:scale-[1.02] md:order-2"
+          className="relative order-1 aspect-[4/3] w-full transition-transform duration-700 hover:-rotate-1 hover:scale-[1.02] md:order-2 md:aspect-auto md:h-[min(50svh,460px)]"
         >
           <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-accent/25 via-accent-3/20 to-accent-2/25 blur-2xl" />
           <ProjectVisual project={project} className="h-full w-full" />
@@ -96,7 +96,7 @@ function SecondaryPanel({
           <button key={project.id} data-cursor="Open" onClick={() => onOpen(project.id)} className="group text-left">
             <ProjectVisual
               project={project}
-              className="aspect-[4/3] w-full transition-transform duration-500 group-hover:-translate-y-1.5"
+              className="aspect-[16/10] w-full transition-transform duration-500 group-hover:-translate-y-1.5"
             />
             <p className="mt-4 font-mono text-[0.62rem] font-medium uppercase tracking-[0.16em] text-bone/45">{project.industry}</p>
             <h4 className="mt-1 font-display text-xl font-semibold tracking-tight text-bone transition-colors group-hover:text-accent">
@@ -131,17 +131,19 @@ export default function Work() {
 
     if (isMobile) {
       const ctx = gsap.context(() => {
-        gsap.utils.toArray<HTMLElement>('article', track).forEach((article) => {
+        gsap.utils.toArray<HTMLElement>('article', track).forEach((article, i) => {
           gsap.fromTo(
             article,
-            { opacity: 0, y: 50, scale: 0.97 },
+            { opacity: 0, x: i % 2 === 0 ? -70 : 70, y: 40, rotate: i % 2 === 0 ? -4 : 4, scale: 0.94 },
             {
               opacity: 1,
+              x: 0,
               y: 0,
+              rotate: 0,
               scale: 1,
-              duration: 0.9,
+              duration: 1,
               ease: 'power3.out',
-              scrollTrigger: { trigger: article, start: 'top 88%' },
+              scrollTrigger: { trigger: article, start: 'top 88%', toggleActions: 'play none none reverse' },
             },
           )
           gsap.utils.toArray<HTMLElement>('.reveal-tag', article).forEach((tag, j) => {
@@ -154,7 +156,7 @@ export default function Work() {
                 duration: 0.4,
                 delay: 0.15 + j * 0.05,
                 ease: 'power2.out',
-                scrollTrigger: { trigger: article, start: 'top 88%' },
+                scrollTrigger: { trigger: article, start: 'top 88%', toggleActions: 'play none none reverse' },
               },
             )
           })
@@ -215,7 +217,7 @@ export default function Work() {
 
   const panelClass = isMobile
     ? 'w-full px-6 py-14'
-    : 'flex h-full w-screen shrink-0 flex-col justify-center px-6 pt-16 sm:px-10 md:px-16'
+    : 'flex h-full w-screen shrink-0 flex-col justify-center px-6 pb-8 pt-[13.5rem] sm:px-10 md:px-16'
 
   return (
     <>

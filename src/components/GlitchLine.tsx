@@ -26,7 +26,10 @@ export default function GlitchLine({ children, className = '', trigger, delay = 
       const tl = gsap.timeline({
         delay,
         paused: !trigger && !intro.started,
-        scrollTrigger: trigger ? { trigger, start: 'top 88%' } : undefined,
+        // On phones the headline also plays backwards when you scroll back up past it.
+        scrollTrigger: trigger
+          ? { trigger, start: 'top 88%', ...(window.matchMedia('(max-width: 767px)').matches ? { toggleActions: 'play none none reverse' } : {}) }
+          : undefined,
       })
       if (!trigger && !intro.started) {
         offIntro = onIntro(() => tl.play())

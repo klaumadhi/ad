@@ -50,7 +50,7 @@ export default function About() {
       )}
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <span data-reveal="fade" className="eyebrow eyebrow-line">
+        <span data-reveal="fade" data-reveal-m="left" className="eyebrow eyebrow-line">
           {t('Who We Are')}
         </span>
 
@@ -75,7 +75,7 @@ export default function About() {
           ]}
         />
 
-        <ul data-stagger="rise" className="mt-14 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
+        <ul data-stagger="rise" data-stagger-m="flip" className="mt-14 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
           {focusAreas.map((area, i) => (
             <li key={area}>
               <Tilt className="glass rounded-2xl p-5">

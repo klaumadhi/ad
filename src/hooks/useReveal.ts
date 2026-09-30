@@ -1,6 +1,7 @@
 import { useEffect, type RefObject } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useIsMobile } from './useMedia'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -8,42 +9,73 @@ const FROM: Record<string, gsap.TweenVars> = {
   up: { y: 46, opacity: 0 },
   fade: { opacity: 0 },
   scale: { scale: 0.9, y: 26, opacity: 0 },
-  left: { x: -80, opacity: 0 },
-  right: { x: 80, opacity: 0 },
+  left: { x: -90, opacity: 0 },
+  right: { x: 90, opacity: 0 },
   blur: { y: 30, opacity: 0, filter: 'blur(14px)' },
   rise: { y: 100, opacity: 0, scale: 0.95 },
   tilt: { y: 70, opacity: 0, rotateX: 14, transformPerspective: 900, transformOrigin: '50% 100%' },
+  flip: { y: 50, opacity: 0, rotateX: -80, transformPerspective: 800, transformOrigin: '50% 0%' },
+  zoom: { scale: 0.55, opacity: 0 },
+  spin: { rotate: -9, scale: 0.85, y: 60, opacity: 0 },
+  skew: { skewY: 7, y: 70, opacity: 0 },
 }
 
 /**
  * Declarative scroll animation for a section. Inside `scope`:
- *   data-reveal="up|fade|scale|left|right|blur|rise|tilt"  (+ data-delay="0.2")  animates the element in once
- *   data-stagger="up|scale|…" (+ data-each="0.08")                                  staggers the element's children
- *   data-parallax="0.15"                                                             drifts the element against the scroll
+ *   data-reveal="up|fade|scale|left|right|blur|rise|tilt|flip|zoom|spin|skew"  (+ data-delay="0.2")
+ *   data-stagger="…" (+ data-each="0.08")     staggers the element's children
+ *   data-parallax="0.15"                       drifts the element against the scroll
+ * On phones, `data-reveal-m` / `data-stagger-m` override the variant ("alt" makes a list's items
+ * alternate in from the left and right), every item animates on its own as it reaches the viewport,
+ * and all of it is reversible — scrolling back up plays the animation backwards.
  */
 export function useReveal(scope: RefObject<HTMLElement | null>, deps: unknown[] = []) {
+  const isMobile = useIsMobile()
+
   useEffect(() => {
     const root = scope.current
     if (!root) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const st = (trigger: Element, start: string): ScrollTrigger.Vars =>
+      isMobile
+        ? { trigger, start, toggleActions: 'play none none reverse' }
+        : { trigger, start, once: true }
 
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>('[data-reveal]', root).forEach((el) => {
-        const from = FROM[el.dataset.reveal || 'up'] ?? FROM.up
+        const kind = (isMobile && el.dataset.revealM) || el.dataset.reveal || 'up'
         gsap.from(el, {
-          ...from,
-          duration: 1.15,
+          ...(FROM[kind] ?? FROM.up),
+          duration: 1.1,
           delay: parseFloat(el.dataset.delay || '0'),
           ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+          scrollTrigger: st(el, 'top 90%'),
         })
       })
 
       gsap.utils.toArray<HTMLElement>('[data-stagger]', root).forEach((group) => {
-        const from = FROM[group.dataset.stagger || 'up'] ?? FROM.up
-        gsap.from(Array.from(group.children), {
-          ...from,
+        const kind = (isMobile && group.dataset.staggerM) || group.dataset.stagger || 'up'
+        const items = Array.from(group.children) as HTMLElement[]
+
+        if (isMobile) {
+          // Vertical stacks read best when each item animates as it arrives.
+          items.forEach((item, i) => {
+            const from =
+              kind === 'alt' ? { x: i % 2 === 0 ? -110 : 110, opacity: 0, rotate: i % 2 === 0 ? -3 : 3 } : (FROM[kind] ?? FROM.up)
+            gsap.from(item, {
+              ...from,
+              duration: 0.95,
+              delay: (i % 2) * 0.06,
+              ease: 'power3.out',
+              scrollTrigger: st(item, 'top 92%'),
+            })
+          })
+          return
+        }
+
+        gsap.from(items, {
+          ...(FROM[kind] ?? FROM.up),
           duration: 0.95,
           stagger: parseFloat(group.dataset.each || '0.09'),
           ease: 'power3.out',
@@ -67,5 +99,5 @@ export function useReveal(scope: RefObject<HTMLElement | null>, deps: unknown[] 
 
     return () => ctx.revert()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
+  }, [isMobile, ...deps])
 }

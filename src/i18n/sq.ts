@@ -179,6 +179,7 @@ export const sq: Record<string, string> = {
   // Technology
   Technology: "Teknologji",
   "The Stack": "Stack-u Ynë",
+  "Stack online": "Stack aktiv",
   "Modern, production-proven tools chosen for reliability.":
     "Mjete moderne, të provuara në prodhim, të zgjedhura për stabilitet.",
   Language: "Gjuhë",
@@ -216,7 +217,7 @@ export const sq: Record<string, string> = {
   "How We Work": "Si Punojmë",
   "The Process": "Procesi",
   "Five steps, no shortcuts — the same path for every project, from first conversation to launch.":
-    "Pesë hapa, pa shkurtore — e njëjta rrugë për çdo projekt, nga biseda e parë deri te lansimi.",
+    "Pesë hapa — e njëjta rrugë për çdo projekt, nga biseda e parë deri te lansimi.",
   Discover: "Njohim",
   "Understand the business, users and goals.":
     "Kuptojmë biznesin, përdoruesit dhe qëllimet tuaja.",

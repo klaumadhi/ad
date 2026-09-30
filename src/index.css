@@ -345,3 +345,30 @@ html.is-loading .hero-hide { visibility: hidden; }
   box-shadow: 0 0 0 8px rgba(91, 76, 255, 0.14), 0 10px 30px -8px rgba(91, 76, 255, 0.7);
   transform: scale(1.12);
 }
+
+/* ---------- Scroll arrow water ---------- */
+@keyframes water-a { from { transform: translateX(0); } to { transform: translateX(40px); } }
+@keyframes water-b { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+.water-wave-back { animation: water-a 3.2s linear infinite; }
+.water-wave-front { animation: water-b 2.2s linear infinite; }
+html.is-loading .scroll-arrow { visibility: hidden; }
+
+/* ---------- Stack tiles (scan-lit state) ---------- */
+.tech-tile {
+  transition: box-shadow 0.6s ease, background 0.6s ease;
+}
+.tech-tile.is-lit {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1.5px rgba(91, 76, 255, 0.55), 0 26px 60px -24px rgba(91, 76, 255, 0.6), var(--shadow-glass);
+}
+.tech-tile.is-lit .tech-dot {
+  background: var(--color-accent-2);
+  box-shadow: 0 0 14px 3px rgba(23, 179, 242, 0.6);
+}
+
+/* ---------- Scroll orb ---------- */
+@keyframes orb-spin { to { transform: rotate(360deg); } }
+.orb-ticks { transform-box: fill-box; transform-origin: center; animation: orb-spin 26s linear infinite; }
+.scroll-arrow:hover .orb-ticks { animation-duration: 6s; }
+@keyframes orb-chev { 0%, 100% { transform: translateY(1.6px); opacity: 0.65; } 50% { transform: translateY(-1.6px); opacity: 1; } }
+.orb-chev { animation: orb-chev 2.2s ease-in-out infinite; }
