@@ -10,6 +10,8 @@ import { useInView } from '../hooks/useInView'
 
 function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
   const explode = useRef(0)
+  const code = useRef(0)
+  const genie = useRef(0)
   const logoGroup = useRef<THREE.Group>(null)
 
   useFrame((state, delta) => {
@@ -28,17 +30,20 @@ function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<numbe
       targetY = THREE.MathUtils.lerp(1.1, 1.55, t)
     } else if (p < 0.36) {
       // Pull back through the split and settle toward the laptop framing.
-      const t = sm(p, 0.14, 0.36)
-      targetZ = THREE.MathUtils.lerp(4.4, 7.4, t)
+      // stay close while the logo is typed out as code so the characters read, then pull back
+      const t = sm(p, 0.26, 0.36)
+      targetZ = THREE.MathUtils.lerp(4.6, 7.4, t)
       targetY = THREE.MathUtils.lerp(1.55, 1.5, t)
       lookY = THREE.MathUtils.lerp(1.3, 1.45, t)
     } else if (p < 0.9) {
       const orbitT = state.clock.elapsedTime
       const lift = sm(p, 0.54, 0.66) - sm(p, 0.68, 0.74)
       const fan = sm(p, 0.8, 0.88) - sm(p, 0.9, 0.95)
-      targetZ = 7.4 + Math.sin(orbitT * 0.25) * 0.2 + lift * 0.9 + fan * 1.6
-      targetY = 2.15 + Math.sin(orbitT * 0.18) * 0.06 + lift * 0.1
-      lookY = 1.25
+      // stay close through the genie suction, then ease back as the laptop opens
+      const pull = sm(p, 0.4, 0.54)
+      targetZ = THREE.MathUtils.lerp(5.0, 7.4, pull) + Math.sin(orbitT * 0.25) * 0.2 + lift * 0.9 + fan * 1.6
+      targetY = THREE.MathUtils.lerp(1.6, 2.15, pull) + Math.sin(orbitT * 0.18) * 0.06 + lift * 0.1
+      lookY = THREE.MathUtils.lerp(1.4, 1.25, pull)
     } else {
       const t = sm(p, 0.9, 1)
       targetZ = THREE.MathUtils.lerp(9, 7.5, t)
@@ -52,26 +57,20 @@ function JourneyRig({ progressRef }: { progressRef: React.MutableRefObject<numbe
 
     // Explode peaks mid-deconstruction, resolves back to 0 (assembled) before the
     // laptop takes over, and stays assembled again for the final return-to-brand beat.
-    let explodeTarget = 0
-    if (p >= 0.14 && p < 0.24) explodeTarget = sm(p, 0.14, 0.24)
-    else if (p >= 0.24 && p < 0.33) explodeTarget = 1 - sm(p, 0.24, 0.33)
-    explode.current += (explodeTarget - explode.current) * Math.min(1, delta * 4)
+    // The logo is typed out as code, row by row (p 0.10 → 0.33); no separation, so the mark stays whole
+    // until it is entirely text and then folds into the laptop.
+    explode.current = 0
+    // typed out as code (0.10→0.33), held a beat, then sucked into the laptop like a genie into its lamp
+    // (0.36→0.47); on the way out it pours back out of the laptop (0.90→0.97) and reads as the logo again.
+    code.current = p < 0.6 ? sm(p, 0.1, 0.33) : 1 - sm(p, 0.95, 1.0)
+    genie.current = p < 0.6 ? sm(p, 0.36, 0.47) : 1 - sm(p, 0.9, 0.97)
 
-    // The mark implodes into the laptop (spin + shrink + shockwave), returns for the finale.
-    let logoScale = 1
-    if (p >= 0.33 && p < 0.9) logoScale = Math.max(0.0001, 1 - sm(p, 0.33, 0.43))
-    else if (p >= 0.9) logoScale = Math.max(0.0001, sm(p, 0.9, 1))
-    if (logoGroup.current) {
-      logoGroup.current.scale.setScalar(logoScale)
-      logoGroup.current.rotation.y = p < 0.9 ? sm(p, 0.33, 0.43) * Math.PI * 1.5 : (1 - sm(p, 0.9, 1)) * -Math.PI
-      // Scale about the mark's own centre, drifting toward the laptop screen while shrinking.
-      logoGroup.current.position.y = (p < 0.9 ? 1.3 : 1.55) * (1 - logoScale)
-    }
+    if (logoGroup.current) logoGroup.current.scale.setScalar(1)
   })
 
   return (
     <group ref={logoGroup}>
-      <LogoModel scale={1} position={[0, 1.55, 0]} explodeRef={explode} interactive={false} />
+      <LogoModel scale={1} position={[0, 1.55, 0]} explodeRef={explode} codeRef={code} genieRef={genie} interactive={false} />
     </group>
   )
 }
